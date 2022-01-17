@@ -72,11 +72,14 @@ LoadButton.addEventListener("click", function() {
         reader.onload = function() {
             Input.value = reader.result;
         }
+        FileInput.value = null;
     }
 });
 
 function dispatcher() {
     let currentBatch = textParser();
+    console.log(currentBatch);
+    Input.value = "";
 }
 
 function scheduler() {
@@ -100,7 +103,6 @@ function textParser() {
                 batch[process] = batch[process].split(" ");
             }
         }
-        // Removes empty elements in batch
         while (batch.includes("")) {
             for (process in batch) {
                 if (batch[process] === "") {
@@ -111,6 +113,9 @@ function textParser() {
         while (1+1 == 2) {
             let working = false;
             for (process in batch) {
+                while (batch[process].includes("")) {
+                    batch[process].splice(batch[process].indexOf(""),1);
+                }
                 if (batch[process].length == 1 || batch[process].length > 3) {
                     batch.splice(process,1);
                     working = true;
@@ -141,7 +146,6 @@ function textParser() {
                 break;
             }
         }
-        console.log(batch);
         return batch;
     }
 }

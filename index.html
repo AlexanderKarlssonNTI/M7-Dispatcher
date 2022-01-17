@@ -7,13 +7,34 @@
     <title>Dispatcher</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="display: flex; flex-direction: column;">
-    <h1>Welcome to hell!</h1>
-    <textarea name="" id="input" cols="20" rows="10" style="width: 200px;"></textarea>
-    <input type="file" id="fileInput" style="display: none;">
-    <button id="loadBtn" style="width: 200px;">Load</button>
-    <button id="clearBtn" style="width: 200px;">Clear</button>
-    <button id="processBtn" style="width: 200px;">Execute</button>
+<body class="column">
+    <h1 style="text-align: center;">Welcome to hell!</h1>
+    <div class="row">
+        <div class="column">
+            <h2>Batch</h2>
+            <textarea name="" id="input" cols="19" rows="10"></textarea>
+            <input type="file" id="fileInput" style="display: none;">
+            <div class="column Buttons">
+                <button id="loadBtn">Load</button>
+                <button id="clearBtn">Clear</button>
+                <button id="processBtn">Execute</button>
+            </div>
+        </div>
+        <div class="row cpuDisplay">
+            <div class="column">
+                <h2>CPU 1</h2>
+                <textarea name="" id="cpu1" cols="18" rows="10"></textarea>
+            </div>
+            <div class="column">
+                <h2>CPU 2</h2>
+                <textarea name="" id="cpu2" cols="18" rows="10"></textarea>
+            </div>
+            <div class="column">
+                <h2>CPU 3</h2>
+                <textarea name="" id="cpu3" cols="18" rows="10"></textarea>
+            </div>
+        </div>
+    </div>
 
     <script src="code.js"></script>
 </body>
