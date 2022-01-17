@@ -17,7 +17,7 @@ class FIFO {
     
     add(process) {}
     
-    remove(process) {}
+    remove() {}
     
     work(ms) {}
 }
@@ -48,53 +48,100 @@ class PRIO {
     work(ms) {}
 }
 
-// const clock = setInterval(scheduler,100);
+const processInterval = 100;
+// const clock = setInterval(scheduler,processInterval);
 const Input = document.getElementById("input");
+const FileInput = document.getElementById("fileInput");
 const ProcessButton = document.getElementById("processBtn");
+const ClearButton = document.getElementById("clearBtn");
+const LoadButton = document.getElementById("loadBtn");
 let CPU1 = new FIFO();
 let CPU2 = new SHARE();
 let CPU3 = new PRIO();
 
 ProcessButton.addEventListener("click", dispatcher);
+ClearButton.addEventListener("click", function() {
+    Input.value = "";
+});
+LoadButton.addEventListener("click", function() {
+    FileInput.click();
+    FileInput.onchange = function() {
+        let file = FileInput.files[0];
+        let reader = new FileReader;
+        reader.readAsText(file);
+        reader.onload = function() {
+            Input.value = reader.result;
+        }
+    }
+});
 
 function dispatcher() {
-    if (Input) {
-        let batch = Input.value.split(/\r?\n/);
-        for (process in batch) {
-            // console.log(batch);
-            // console.log(process);
-            if (batch[process] != "") {
-                batch[process] = batch[process].split(" ");
-            }
-        }
-        let godIsDead = true;
-        let x = 0;
-        while (batch.includes("")) {
-            console.log(batch);
-            for (process in batch) {
-                if (batch[process] === "") {
-                    batch = batch.splice(process,1);
-                }
-            }
-            if (x === 10) {
-                console.log("Aborting!");
-                break;
-            }
-            x++;
-        }
-        console.log(batch);
-    }
+    let currentBatch = textParser();
 }
 
 function scheduler() {
     if (CPU1.queue) {
-        CPU1.work();
+        CPU1.work(processInterval);
     }
     if (CPU2.queue) {
-        CPU2.work();
+        CPU2.work(processInterval);
     }
     if (CPU3.queue) {
-        CPU3.work();
+        CPU3.work(processInterval);
     }
 }
 
+function textParser() {
+    if (Input.value) {
+        let batch = Input.value.split(/\r?\n/);
+        // Spliting each line with text in it
+        for (process in batch) {
+            if (batch[process] != "") {
+                batch[process] = batch[process].split(" ");
+            }
+        }
+        // Removes empty elements in batch
+        while (batch.includes("")) {
+            for (process in batch) {
+                if (batch[process] === "") {
+                    batch.splice(process,1);
+                }
+            }
+        }
+        while (1+1 == 2) {
+            let working = false;
+            for (process in batch) {
+                if (batch[process].length == 1 || batch[process].length > 3) {
+                    batch.splice(process,1);
+                    working = true;
+                }
+                else {
+                    if (batch[process].length == 2) {
+                        batch[process].push(1);
+                    }
+                    if (batch[process].length == 3) {
+                        if (Number.isNaN(batch[process][1]) || Number.isNaN(batch[process][2])) {
+                            batch.splice(process,1);
+                            working = true;
+                        }
+                        else {
+                            batch[process][1] = parseInt(batch[process][1]);
+                            batch[process][2] = parseInt(batch[process][2]);
+                            if (batch[process][2] > 5) {
+                                batch[process][2] = 5;
+                            }
+                            else if (batch[process][2] < 1) {
+                                batch[process][2] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            if (working === false) {
+                break;
+            }
+        }
+        console.log(batch);
+        return batch;
+    }
+}
