@@ -17,7 +17,37 @@ textarea {
     margin-left: 30px;
 }
 
+.cpuTable {
+    border: 2px solid black;
+}
+
+.cpuTable td{
+    border: 2px solid black;
+}
+
+.cpuTable tr{
+    height: 20px;
+}
+
+.cpuTable p{
+    margin: 0;
+    padding: 0;
+}
+
 .Buttons {
     margin-top: 6px;
     gap: 4px;
 }
+
+.taskName {
+    width: 100px;
+}
+
+.taskTime {
+    width: 64px;
+}
+
+.taskPrio {
+    width: 30px;
+}
+
