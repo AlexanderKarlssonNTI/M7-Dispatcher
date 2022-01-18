@@ -45,7 +45,9 @@ class FIFO {
     work(ms) {
         this.queue[0].execTime -= ms;
         if (this.queue[0].execTime <= 0) {
+            let temp = this.queue[0].execTime;
             this.remove();
+            this.queue[0].execTime -= temp;
         }
         this.updateDisplay();
     }
@@ -77,25 +79,50 @@ class SHARE {
     
     add(process) {
         let newProcess = new Process(process[0],process[1],process[2]);
+        let nextProcess = this.queue;
+        if (!this.queue) {
+            this.queue = newProcess;
+        }
+        
+        while (nextProcess.preceding) {
+            nextProcess = nextProcess.preceding;
+        }
+        nextProcess.preceding = newProcess;
+        this.updateDisplay();
     }
     
     remove(process) {}
     
-    work(ms) {}
+    work(ms) {
+        let times = math.floor(100/this.queueLength);
+        if (this.queueLength >= 100) {
+            times = 1;
+        }
+        if (this.queue[0].execTime <= 0) {
+            this.remove();
+        }
+        this.updateDisplay();
+    }
 
-    // updateDisplay() {
-    //     for (let x = 0; x < this.queueLength; x++) {
-    //         if (x == 5) {
-    //             break;
-    //         }
-    //         let disName = "cpu2Name"+(x+1);
-    //         let disTime = "cpu2Time"+(x+1);
-    //         let disPrio = "cpu2Prio"+(x+1);
-    //         document.getElementById(disName).innerHTML = this.queue[x].name;
-    //         document.getElementById(disTime).innerHTML = this.queue[x].execTime;
-    //         document.getElementById(disPrio).innerHTML = this.queue[x].priority;
-    //     }
-    // }
+    updateDisplay() {
+        for (let x = 0; x < this.queueLength; x++) {
+            if (x == 5) {
+                break;
+            }
+            let disName = "cpu2Name"+(x+1);
+            let disTime = "cpu2Time"+(x+1);
+            let disPrio = "cpu2Prio"+(x+1);
+            let item = this.queue;
+            for (let y = 0; y < x; y++) {
+                while (item.preceding) {
+                    item = item.preceding;
+                }
+            }
+            document.getElementById(disName).innerHTML = item.name;
+            document.getElementById(disTime).innerHTML = item.execTime;
+            document.getElementById(disPrio).innerHTML = item.priority;
+        }
+    }
 }
 
 class PRIO {
@@ -161,7 +188,7 @@ function dispatcher() {
     console.log(currentBatch);
     for (process in currentBatch) {
         CPU1.add(currentBatch[process]);
-        CPU2.add(currentBatch[process]);
+        // CPU2.add(currentBatch[process]);
         CPU3.add(currentBatch[process]);
     }
     Input.value = "";
@@ -171,9 +198,9 @@ function scheduler() {
     if (CPU1.queue) {
         CPU1.work(processInterval);
     }
-    if (CPU2.queue) {
-        CPU2.work(processInterval);
-    }
+    // if (CPU2.queue) {
+    //     CPU2.work(processInterval);
+    // }
     if (CPU3.queue) {
         CPU3.work(processInterval);
     }
