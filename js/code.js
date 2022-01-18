@@ -41,7 +41,9 @@ class FIFO {
     work(ms) {
         this.queue[0].execTime -= ms;
         if (this.queue[0].execTime <= 0) {
+            let temp = this.queue[0].execTime;
             this.remove();
+            this.queue[0].execTime -= temp;
         }
     }
 }
@@ -54,11 +56,30 @@ class SHARE {
     
     add(process) {
         let newProcess = new Process(process[0],process[1],process[2]);
+        let nextProcess = this.queue;
+        if (!this.queue) {
+            this.queue = newProcess;
+        }
+        
+        while (nextProcess.preceding) {
+            nextProcess = nextProcess.preceding;
+        }
+        nextProcess.preceding = newProcess;
+        this.updateDisplay();
     }
     
     remove(process) {}
     
-    work(ms) {}
+    work(ms) {
+        let times = math.floor(100/this.queueLength);
+        if (this.queueLength >= 100) {
+            times = 1;
+        }
+        if (this.queue[0].execTime <= 0) {
+            this.remove();
+        }
+        this.updateDisplay();
+    }
 }
 
 class PRIO {
@@ -110,7 +131,7 @@ function dispatcher() {
     console.log(currentBatch);
     for (process in currentBatch) {
         CPU1.add(currentBatch[process]);
-        CPU2.add(currentBatch[process]);
+        // CPU2.add(currentBatch[process]);
         CPU3.add(currentBatch[process]);
     }
     Input.value = "";
@@ -122,9 +143,9 @@ function scheduler() {
     if (CPU1.queue) {
         CPU1.work(processInterval);
     }
-    if (CPU2.queue) {
-        CPU2.work(processInterval);
-    }
+    // if (CPU2.queue) {
+    //     CPU2.work(processInterval);
+    // }
     if (CPU3.queue) {
         CPU3.work(processInterval);
     }
