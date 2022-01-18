@@ -155,6 +155,7 @@ class PRIO {
 }
 
 let processInterval = 100;
+let stop = false;
 const clock = setInterval(scheduler,processInterval);
 const Input = document.getElementById("input");
 const FileInput = document.getElementById("fileInput");
@@ -195,14 +196,16 @@ function dispatcher() {
 }
 
 function scheduler() {
-    if (CPU1.queue) {
-        CPU1.work(processInterval);
-    }
-    // if (CPU2.queue) {
-    //     CPU2.work(processInterval);
-    // }
-    if (CPU3.queue) {
-        CPU3.work(processInterval);
+    if (stop === false) {
+        if (CPU1.queue) {
+            CPU1.work(processInterval);
+        }
+        // if (CPU2.queue) {
+        //     CPU2.work(processInterval);
+        // }
+        if (CPU3.queue) {
+            CPU3.work(processInterval);
+        }
     }
 }
 
