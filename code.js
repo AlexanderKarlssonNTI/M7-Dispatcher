@@ -31,24 +31,40 @@ class FIFO {
     
     remove() {
         if (this.queueLength == 1) {
+            this.queue = null;
+            this.queueLength = 0;
+            this.updateDisplay();
         }
-        else if (this.queueLength > 1) {
+        else {
+            this.queue.shift();
+            this.queueLength--;
+            this.updateDisplay();
         }
     }
     
-    work(ms) {}
+    work(ms) {
+        this.queue[0].execTime -= ms;
+        if (this.queue[0].execTime <= 0) {
+            this.remove();
+        }
+        this.updateDisplay();
+    }
 
     updateDisplay() {
-        for (let x = 0; x < this.queueLength; x++) {
-            if (x == 5) {
-                break;
+        for (let x = 0; x < 5; x++) {
+            let disName = "cpu1Name"+(x+1);
+            let disTime = "cpu1Time"+(x+1);
+            let disPrio = "cpu1Prio"+(x+1);
+            if (x > (this.queueLength-1)) {
+                document.getElementById(disName).innerHTML = "";
+                document.getElementById(disTime).innerHTML = "";
+                document.getElementById(disPrio).innerHTML = "";
             }
-            let disName = "cpu1name"+(x+1);
-            let disTime = "cpu1time"+(x+1);
-            let disPrio = "cpu1prio"+(x+1);
-            document.getElementById(disName).innerHTML(this.queue[x][0]);
-            document.getElementById(disTime).innerHTML(this.queue[x][1]);
-            document.getElementById(disPrio).innerHTML(this.queue[x][2]);
+            else {
+                document.getElementById(disName).innerHTML = this.queue[x].name;
+                document.getElementById(disTime).innerHTML = this.queue[x].execTime;
+                document.getElementById(disPrio).innerHTML = this.queue[x].priority;
+            }
         }
     }
 }
@@ -67,7 +83,19 @@ class SHARE {
     
     work(ms) {}
 
-    updateDisplay() {}
+    // updateDisplay() {
+    //     for (let x = 0; x < this.queueLength; x++) {
+    //         if (x == 5) {
+    //             break;
+    //         }
+    //         let disName = "cpu2Name"+(x+1);
+    //         let disTime = "cpu2Time"+(x+1);
+    //         let disPrio = "cpu2Prio"+(x+1);
+    //         document.getElementById(disName).innerHTML = this.queue[x].name;
+    //         document.getElementById(disTime).innerHTML = this.queue[x].execTime;
+    //         document.getElementById(disPrio).innerHTML = this.queue[x].priority;
+    //     }
+    // }
 }
 
 class PRIO {
@@ -84,64 +112,28 @@ class PRIO {
     
     work(ms) {}
 
-    updateDisplay() {}
+    // updateDisplay() {
+    //     for (let x = 0; x < this.queueLength; x++) {
+    //         if (x == 5) {
+    //             break;
+    //         }
+    //         let disName = "cpu3Name"+(x+1);
+    //         let disTime = "cpu3Time"+(x+1);
+    //         let disPrio = "cpu3Prio"+(x+1);
+    //         document.getElementById(disName).innerHTML = this.queue[x].name;
+    //         document.getElementById(disTime).innerHTML = this.queue[x].execTime;
+    //         document.getElementById(disPrio).innerHTML = this.queue[x].priority;
+    //     }
+    // }
 }
 
 let processInterval = 100;
-// const clock = setInterval(scheduler,processInterval);
+const clock = setInterval(scheduler,processInterval);
 const Input = document.getElementById("input");
 const FileInput = document.getElementById("fileInput");
 const ProcessButton = document.getElementById("processBtn");
 const ClearButton = document.getElementById("clearBtn");
 const LoadButton = document.getElementById("loadBtn");
-
-const CPU1name1 = document.getElementById("cpu1Name1");
-const CPU1time1 = document.getElementById("cpu1Time1");
-const CPU1prio1 = document.getElementById("cpu1Prio1");
-const CPU1name2 = document.getElementById("cpu1Name2");
-const CPU1time2 = document.getElementById("cpu1Time2");
-const CPU1prio2 = document.getElementById("cpu1Prio2");
-const CPU1name3 = document.getElementById("cpu1Name3");
-const CPU1time3 = document.getElementById("cpu1Time3");
-const CPU1prio3 = document.getElementById("cpu1Prio3");
-const CPU1name4 = document.getElementById("cpu1Name4");
-const CPU1time4 = document.getElementById("cpu1Time4");
-const CPU1prio4 = document.getElementById("cpu1Prio4");
-const CPU1name5 = document.getElementById("cpu1Name5");
-const CPU1time5 = document.getElementById("cpu1Time5");
-const CPU1prio5 = document.getElementById("cpu1Prio5");
-
-const CPU2name1 = document.getElementById("cpu2Name1");
-const CPU2time1 = document.getElementById("cpu2Time1");
-const CPU2prio1 = document.getElementById("cpu2Prio1");
-const CPU2name2 = document.getElementById("cpu2Name2");
-const CPU2time2 = document.getElementById("cpu2Time2");
-const CPU2prio2 = document.getElementById("cpu2Prio2");
-const CPU2name3 = document.getElementById("cpu2Name3");
-const CPU2time3 = document.getElementById("cpu2Time3");
-const CPU2prio3 = document.getElementById("cpu2Prio3");
-const CPU2name4 = document.getElementById("cpu2Name4");
-const CPU2time4 = document.getElementById("cpu2Time4");
-const CPU2prio4 = document.getElementById("cpu2Prio4");
-const CPU2name5 = document.getElementById("cpu2Name5");
-const CPU2time5 = document.getElementById("cpu2Time5");
-const CPU2prio5 = document.getElementById("cpu2Prio5");
-
-const CPU3name1 = document.getElementById("cpu3Name1");
-const CPU3time1 = document.getElementById("cpu3Time1");
-const CPU3prio1 = document.getElementById("cpu3Prio1");
-const CPU3name2 = document.getElementById("cpu3Name2");
-const CPU3time2 = document.getElementById("cpu3Time2");
-const CPU3prio2 = document.getElementById("cpu3Prio2");
-const CPU3name3 = document.getElementById("cpu3Name3");
-const CPU3time3 = document.getElementById("cpu3Time3");
-const CPU3prio3 = document.getElementById("cpu3Prio3");
-const CPU3name4 = document.getElementById("cpu3Name4");
-const CPU3time4 = document.getElementById("cpu3Time4");
-const CPU3prio4 = document.getElementById("cpu3Prio4");
-const CPU3name5 = document.getElementById("cpu3Name5");
-const CPU3time5 = document.getElementById("cpu3Time5");
-const CPU3prio5 = document.getElementById("cpu3Prio5");
 
 let CPU1 = new FIFO();
 let CPU2 = new SHARE();
