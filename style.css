@@ -39,15 +39,17 @@ textarea {
     gap: 4px;
 }
 
-.taskName {
+/* Name-column */
+tr th:nth-child(1) {
     width: 100px;
 }
 
-.taskTime {
+/* Time-column */
+tr th:nth-child(2) {
     width: 64px;
 }
 
-.taskPrio {
+/* Prio-column */
+tr th:nth-child(3) {
     width: 30px;
 }
-
