@@ -53,3 +53,7 @@ tr th:nth-child(2) {
 tr th:nth-child(3) {
     width: 30px;
 }
+
+.hidden {
+    display: none;
+}
