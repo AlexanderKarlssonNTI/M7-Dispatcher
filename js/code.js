@@ -1,5 +1,6 @@
 class Process {
-    constructor(name, execTime, priority) {
+    constructor(id ,name, execTime, priority) {
+        this.ID = id;
         this.name = name;
         this.execTime = execTime;
         this.priority = priority;
@@ -16,7 +17,7 @@ class FIFO {
   }
 
     add(process) {
-        let newProcess = new Process(process[0], process[1], process[2]);
+        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
         if (!this.queue) {
             this.queue = [newProcess];
             this.queueLength = 1;
@@ -60,7 +61,7 @@ class SHARE {
     }
 
     add(process) {
-        let newProcess = new Process(process[0], process[1], process[2]);
+        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
         let nextProcess = this.queue;
         if (!this.queue) {
             this.queue = newProcess;
@@ -75,31 +76,40 @@ class SHARE {
 
     remove(process) {
         let nextProcess = this.queue;
-        while (nextProcess.preceding) {
-            if (nextProcess.preceding == process) {
-                let temp = nextProcess.preceding;
-                nextProcess.preceding = temp;
-                break;
+        if (nextProcess == process) {
+            this.queue = nextProcess.preceding;
+        }
+        else {
+            while (nextProcess.preceding) {
+                if (nextProcess.preceding == process) {
+                    let temp = nextProcess.preceding;
+                    nextProcess.preceding = temp;
+                    break;
+                }
+                nextProcess = nextProcess.preceding;
             }
-            nextProcess = nextProcess.preceding;
         }
     }
 
     work(ms) {
         let times = Math.floor(100 / this.queueLength);
-        let current;
+        let currentProcess = this.queue;
+        let overflow = 0;
         let iteration = 1;
         if (this.queueLength >= 100) {
             times = 1;
         }
-        while (nextProcess.preceding) {
-            nextProcess = nextProcess.preceding;
-            if (iteration == 100) {
+        while (currentProcess && iteration < 100) {
+            currentProcess.execTime -= (times + overflow);
+            if (currentProcess.execTime <= 0) {
+                overflow = -currentProcess.execTime;
+                this.remove(currentProcess);
+            }
+            if (iteration > 100) {
                 break;
             }
-        }
-        if (this.queue[0].execTime <= 0) {
-            this.remove();
+            currentProcess = currentProcess.preceding;
+            iteration++;
         }
     }
 }
@@ -111,7 +121,7 @@ class PRIO {
     }
 
     add(process) {
-        let newProcess = new Process(process[0], process[1], process[2]);
+        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
     }
 
     remove(process) { }
@@ -120,6 +130,7 @@ class PRIO {
 }
 
 let processInterval = 100;
+let globalID = 0;
 let Stop = false;
 const clock = setInterval(scheduler, processInterval);
 
@@ -258,7 +269,7 @@ function textParser() {
 }
 
 function DrawAllTasks(tasks) {
-    let el = document.querySelector("#foo");
+    let el = document.querySelector("#cpu1");
 
     tasks.forEach((task) => {
         const tr = document.createElement("tr");
