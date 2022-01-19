@@ -35,45 +35,25 @@
                 <button id="startStopBtn">Stop</button>
             </div>
         </div>
-        <div class="row cpuDisplay">
-            <div class="column">
-                <h2>CPU 1</h2>
-                <!-- <textarea id="cpu1" cols="18" rows="10" disabled></textarea> -->
-                <table class="cpuTable">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Time</th>
-                            <th>Prio</th>
-                        </tr> 
-                    </thead>
-                    <tbody id="foo">
-                        
-                    </tbody>
-                </table>
-            </div>
-            <div class="column">
-                <h2>CPU 2</h2>
-                <!-- <textarea id="cpu2" cols="18" rows="10" disabled></textarea> -->
-                <table class="cpuTable" id="foo">
-                    <tr>
-                        <th>Name</th>
-                        <th>Time</th>
-                        <th>Prio</th>
-                    </tr>
-                </table>
-            </div>
-            <div class="column">
-                <h2>CPU 3</h2>
-                <!-- <textarea id="cpu3" cols="18" rows="10" disabled></textarea> -->
-                <table class="cpuTable" id="foo">
-                    <tr>
-                        <th>Name</th>
-                        <th>Time</th>
-                        <th>Prio</th>
-                    </tr>
-                </table>
-            </div>
+        <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2'] }">
+            <template x-for="cpu in cpus">
+                <div class="column">
+                    <h2 x-text="FormatCPUTitle(cpu)"></h2>
+
+                    <table class="cpuTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Time</th>
+                                <th>Prio</th>
+                            </tr> 
+                        </thead>
+                        <tbody :id="cpu">
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </template>
         </div>
     </div>
 </body>
