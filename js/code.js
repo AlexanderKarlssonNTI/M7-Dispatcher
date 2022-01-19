@@ -1,12 +1,12 @@
 class Process {
-  constructor(name, execTime, priority) {
-    this.name = name;
-    this.execTime = execTime;
-    this.priority = priority;
-    this.remainingTime = this.execTime;
-    this.preceding = null;
-    this.upcoming = null;
-  }
+    constructor(name, execTime, priority) {
+        this.name = name;
+        this.execTime = execTime;
+        this.priority = priority;
+        this.remainingTime = this.execTime;
+        this.preceding = null;
+        this.upcoming = null;
+    }
 }
 
 class FIFO {
@@ -16,14 +16,14 @@ class FIFO {
     }
 
     add(process) {
-    let newProcess = new Process(process[0], process[1], process[2]);
-    if (!this.queue) {
-        this.queue = [newProcess];
-        this.queueLength = 1;
-    } else {
-        this.queue.push(newProcess);
-        this.queueLength++;
-    }
+        let newProcess = new Process(process[0], process[1], process[2]);
+        if (!this.queue) {
+            this.queue = [newProcess];
+            this.queueLength = 1;
+        } else {
+            this.queue.push(newProcess);
+            this.queueLength++;
+        }
     }
 
     remove() {
@@ -36,7 +36,7 @@ class FIFO {
             this.queueLength--;
         }
     }
-    
+
     work(ms) {
         this.queue[0].execTime -= ms;
         if (this.queue[0].execTime <= 0) {
@@ -57,9 +57,9 @@ class SHARE {
         this.queueLength = 0;
         this.queue = null;
     }
-    
+
     add(process) {
-        let newProcess = new Process(process[0],process[1],process[2]);
+        let newProcess = new Process(process[0], process[1], process[2]);
         let nextProcess = this.queue;
         if (!this.queue) {
             this.queue = newProcess;
@@ -71,21 +71,31 @@ class SHARE {
             nextProcess.preceding = newProcess;
         }
     }
-    
+
     remove(process) {
         let nextProcess = this.queue;
         while (nextProcess.preceding) {
-            if (nextProcess == process) {
+            if (nextProcess.preceding == process) {
+                let temp = nextProcess.preceding;
+                nextProcess.preceding = temp;
                 break;
             }
             nextProcess = nextProcess.preceding;
         }
     }
-    
+
     work(ms) {
-        let times = Math.floor(100/this.queueLength);
+        let times = Math.floor(100 / this.queueLength);
+        let current;
+        let iteration = 1;
         if (this.queueLength >= 100) {
             times = 1;
+        }
+        while (nextProcess.preceding) {
+            nextProcess = nextProcess.preceding;
+            if (iteration == 100) {
+                break;
+            }
         }
         if (this.queue[0].execTime <= 0) {
             this.remove();
@@ -94,23 +104,23 @@ class SHARE {
 }
 
 class PRIO {
-  constructor() {
-    this.queueLength = 0;
-    this.queue = null;
-  }
+    constructor() {
+        this.queueLength = 0;
+        this.queue = null;
+    }
 
-  add(process) {
-    let newProcess = new Process(process[0], process[1], process[2]);
-  }
+    add(process) {
+        let newProcess = new Process(process[0], process[1], process[2]);
+    }
 
-  remove(process) {}
+    remove(process) { }
 
-  work(ms) {}
+    work(ms) { }
 }
 
 let processInterval = 100;
 let Stop = false;
-const clock = setInterval(scheduler,processInterval);
+const clock = setInterval(scheduler, processInterval);
 
 // All buttons
 const ProcessButton = document.getElementById("processBtn");
@@ -130,7 +140,7 @@ let CPU3 = new PRIO();
 
 ProcessButton.addEventListener("click", dispatcher);
 ClearButton.addEventListener("click", function () {
-  Input.value = "";
+    Input.value = "";
 });
 
 const clearTasksButton = document.getElementById("clearTasks");
@@ -140,18 +150,18 @@ clearTasksButton.addEventListener("click", function () {
 });
 
 LoadButton.addEventListener("click", function () {
-  FileInput.click();
-  FileInput.onchange = function () {
-    let file = FileInput.files[0];
-    let reader = new FileReader();
-    reader.readAsText(file);
-    reader.onload = function () {
-      Input.value = reader.result;
+    FileInput.click();
+    FileInput.onchange = function () {
+        let file = FileInput.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = function () {
+            Input.value = reader.result;
+        };
+        FileInput.value = null;
     };
-    FileInput.value = null;
-  };
 });
-StartStopButton.addEventListener("click", function(){
+StartStopButton.addEventListener("click", function () {
     Stop = !Stop;
     if (Stop == true) {
         StartStopButton.innerHTML = "Start";
@@ -176,7 +186,7 @@ function dispatcher() {
     }
     Input.value = "";
 
-  DrawAllTasks(currentBatch);
+    DrawAllTasks(currentBatch);
 }
 
 function scheduler() {
@@ -194,91 +204,90 @@ function scheduler() {
 }
 
 function textParser() {
-  if (Input.value) {
-    let batch = Input.value.split(/\r?\n/);
-    // Spliting each line with text in it
-    for (process in batch) {
-      if (batch[process] != "") {
-        batch[process] = batch[process].split(" ");
-      }
-    }
-    while (batch.includes("")) {
-      for (process in batch) {
-        if (batch[process] === "") {
-          batch.splice(process, 1);
-        }
-      }
-    }
-    while (1 + 1 == 2) {
-      let working = false;
-      for (process in batch) {
-        while (batch[process].includes("")) {
-          batch[process].splice(batch[process].indexOf(""), 1);
-        }
-        if (batch[process].length == 1 || batch[process].length > 3) {
-          batch.splice(process, 1);
-          working = true;
-        } else {
-          if (batch[process].length == 2) {
-            batch[process].push(1);
-          }
-          if (batch[process].length == 3) {
-            if (
-              Number.isNaN(batch[process][1]) ||
-              Number.isNaN(batch[process][2])
-            ) {
-              batch.splice(process, 1);
-              working = true;
-            } else {
-              batch[process][1] = parseInt(batch[process][1]);
-              batch[process][2] = parseInt(batch[process][2]);
-              if (batch[process][2] > 5) {
-                batch[process][2] = 5;
-              } else if (batch[process][2] < 1) {
-                batch[process][2] = 1;
-              }
+    if (Input.value) {
+        let batch = Input.value.split(/\r?\n/);
+        // Spliting each line with text in it
+        for (process in batch) {
+            if (batch[process] != "") {
+                batch[process] = batch[process].split(" ");
             }
-          }
         }
-      }
-      if (working === false) {
-        break;
-      }
+        while (batch.includes("")) {
+            for (process in batch) {
+                if (batch[process] === "") {
+                    batch.splice(process, 1);
+                }
+            }
+        }
+        while (1 + 1 == 2) {
+            let working = false;
+            for (process in batch) {
+                while (batch[process].includes("")) {
+                    batch[process].splice(batch[process].indexOf(""), 1);
+                }
+                if (batch[process].length == 1 || batch[process].length > 3) {
+                    batch.splice(process, 1);
+                    working = true;
+                } 
+                else {
+                    if (batch[process].length == 2) {
+                        batch[process].push(1);
+                    }
+                    if (batch[process].length == 3) {
+                        if (Number.isNaN(batch[process][1]) || Number.isNaN(batch[process][2])) {
+                            batch.splice(process, 1);
+                            working = true;
+                        } 
+                        else {
+                            batch[process][1] = parseInt(batch[process][1]);
+                            batch[process][2] = parseInt(batch[process][2]);
+                            if (batch[process][2] > 5) {
+                                batch[process][2] = 5;
+                            } else if (batch[process][2] < 1) {
+                                batch[process][2] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            if (working === false) {
+                break;
+            }
+        }
+        return batch;
     }
-    return batch;
-  }
 }
 
 function DrawAllTasks(tasks) {
-  let el = document.querySelector("#foo");
+    let el = document.querySelector("#foo");
 
-  tasks.forEach((task) => {
-    const tr = document.createElement("tr");
+    tasks.forEach((task) => {
+        const tr = document.createElement("tr");
 
-    for (let i = 0; i < 3; i++) {
-      const td = document.createElement("td");
+        for (let i = 0; i < 3; i++) {
+            const td = document.createElement("td");
 
-      td.textContent = task[i];
+            td.textContent = task[i];
 
-      tr.appendChild(td);
-    }
+            tr.appendChild(td);
+        }
 
-    tr.style.backgroundColor = "yellow";
+        tr.style.backgroundColor = "yellow";
 
-    el.appendChild(tr);
-  });
+        el.appendChild(tr);
+    });
 }
 
 function ClearTasks(cpu) {
-  let el = document.querySelector("#foo");
+    let el = document.querySelector("#foo");
 
-  while (el.lastElementChild) {
-    el.removeChild(el.lastElementChild);
-  }
+    while (el.lastElementChild) {
+        el.removeChild(el.lastElementChild);
+    }
 
-  console.log('This is the current queue:', cpu.queue);
+    console.log('This is the current queue:', cpu.queue);
 
-  cpu.queue = null;
+    cpu.queue = null;
 
-  console.log('The queue is now empty:', cpu.queue);
+    console.log('The queue is now empty:', cpu.queue);
 }
