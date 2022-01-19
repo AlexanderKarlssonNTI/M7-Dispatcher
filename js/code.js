@@ -1,12 +1,12 @@
 class Process {
-    constructor(name,execTime,priority) {
-        this.name = name;
-        this.execTime = execTime;
-        this.priority = priority;
-        this.remainingTime = this.execTime;
-        this.preceding = null;
-        this.upcoming = null;
-    }
+  constructor(name, execTime, priority) {
+    this.name = name;
+    this.execTime = execTime;
+    this.priority = priority;
+    this.remainingTime = this.execTime;
+    this.preceding = null;
+    this.upcoming = null;
+  }
 }
 
 class FIFO {
@@ -14,23 +14,22 @@ class FIFO {
         this.queueLength = 0;
         this.queue = null;
     }
-    
+
     add(process) {
-        let newProcess = new Process(process[0],process[1],process[2]);
-        if (!this.queue) {
-            this.queue = [newProcess];
-            this.queueLength = 1;
-        }
-        else {
-            this.queue.push(newProcess);
-            this.queueLength++;
-        }
+    let newProcess = new Process(process[0], process[1], process[2]);
+    if (!this.queue) {
+        this.queue = [newProcess];
+        this.queueLength = 1;
+    } else {
+        this.queue.push(newProcess);
+        this.queueLength++;
     }
-    
+    }
+
     remove() {
         if (this.queueLength == 1) {
             this.queue = null;
-            this.queueLength = 0;
+            this.queueLength = 0
         }
         else {
             this.queue.shift();
@@ -47,7 +46,7 @@ class FIFO {
                 this.queue[0].execTime -= temp;
             }
             else {
-                this.remove()
+                this.remove();
             }
         }
     }
@@ -56,7 +55,7 @@ class FIFO {
 class SHARE {
     constructor() {
         this.queueLength = 0;
-        this.queue = null
+        this.queue = null;
     }
     
     add(process) {
@@ -95,18 +94,18 @@ class SHARE {
 }
 
 class PRIO {
-    constructor() {
-        this.queueLength = 0;
-        this.queue = null
-    }
-    
-    add(process) {
-        let newProcess = new Process(process[0],process[1],process[2]);
-    }
-    
-    remove(process) {}
-    
-    work(ms) {}
+  constructor() {
+    this.queueLength = 0;
+    this.queue = null;
+  }
+
+  add(process) {
+    let newProcess = new Process(process[0], process[1], process[2]);
+  }
+
+  remove(process) {}
+
+  work(ms) {}
 }
 
 let processInterval = 100;
@@ -130,20 +129,27 @@ let CPU2 = new SHARE();
 let CPU3 = new PRIO();
 
 ProcessButton.addEventListener("click", dispatcher);
-ClearButton.addEventListener("click", function() {
-    Input.value = "";
+ClearButton.addEventListener("click", function () {
+  Input.value = "";
 });
-LoadButton.addEventListener("click", function() {
-    FileInput.click();
-    FileInput.onchange = function() {
-        let file = FileInput.files[0];
-        let reader = new FileReader;
-        reader.readAsText(file);
-        reader.onload = function() {
-            Input.value = reader.result;
-        }
-        FileInput.value = null;
-    }
+
+const clearTasksButton = document.getElementById("clearTasks");
+
+clearTasksButton.addEventListener("click", function () {
+    ClearTasks(CPU1);
+});
+
+LoadButton.addEventListener("click", function () {
+  FileInput.click();
+  FileInput.onchange = function () {
+    let file = FileInput.files[0];
+    let reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = function () {
+      Input.value = reader.result;
+    };
+    FileInput.value = null;
+  };
 });
 StartStopButton.addEventListener("click", function(){
     Stop = !Stop;
@@ -170,7 +176,7 @@ function dispatcher() {
     }
     Input.value = "";
 
-    DrawAllTasks(currentBatch);
+  DrawAllTasks(currentBatch);
 }
 
 function scheduler() {
@@ -188,77 +194,91 @@ function scheduler() {
 }
 
 function textParser() {
-    if (Input.value) {
-        let batch = Input.value.split(/\r?\n/);
-        // Spliting each line with text in it
-        for (process in batch) {
-            if (batch[process] != "") {
-                batch[process] = batch[process].split(" ");
-            }
-        }
-        while (batch.includes("")) {
-            for (process in batch) {
-                if (batch[process] === "") {
-                    batch.splice(process,1);
-                }
-            }
-        }
-        while (1+1 == 2) {
-            let working = false;
-            for (process in batch) {
-                while (batch[process].includes("")) {
-                    batch[process].splice(batch[process].indexOf(""),1);
-                }
-                if (batch[process].length == 1 || batch[process].length > 3) {
-                    batch.splice(process,1);
-                    working = true;
-                }
-                else {
-                    if (batch[process].length == 2) {
-                        batch[process].push(1);
-                    }
-                    if (batch[process].length == 3) {
-                        if (Number.isNaN(batch[process][1]) || Number.isNaN(batch[process][2])) {
-                            batch.splice(process,1);
-                            working = true;
-                        }
-                        else {
-                            batch[process][1] = parseInt(batch[process][1]);
-                            batch[process][2] = parseInt(batch[process][2]);
-                            if (batch[process][2] > 5) {
-                                batch[process][2] = 5;
-                            }
-                            else if (batch[process][2] < 1) {
-                                batch[process][2] = 1;
-                            }
-                        }
-                    }
-                }
-            }
-            if (working === false) {
-                break;
-            }
-        }
-        return batch;
+  if (Input.value) {
+    let batch = Input.value.split(/\r?\n/);
+    // Spliting each line with text in it
+    for (process in batch) {
+      if (batch[process] != "") {
+        batch[process] = batch[process].split(" ");
+      }
     }
+    while (batch.includes("")) {
+      for (process in batch) {
+        if (batch[process] === "") {
+          batch.splice(process, 1);
+        }
+      }
+    }
+    while (1 + 1 == 2) {
+      let working = false;
+      for (process in batch) {
+        while (batch[process].includes("")) {
+          batch[process].splice(batch[process].indexOf(""), 1);
+        }
+        if (batch[process].length == 1 || batch[process].length > 3) {
+          batch.splice(process, 1);
+          working = true;
+        } else {
+          if (batch[process].length == 2) {
+            batch[process].push(1);
+          }
+          if (batch[process].length == 3) {
+            if (
+              Number.isNaN(batch[process][1]) ||
+              Number.isNaN(batch[process][2])
+            ) {
+              batch.splice(process, 1);
+              working = true;
+            } else {
+              batch[process][1] = parseInt(batch[process][1]);
+              batch[process][2] = parseInt(batch[process][2]);
+              if (batch[process][2] > 5) {
+                batch[process][2] = 5;
+              } else if (batch[process][2] < 1) {
+                batch[process][2] = 1;
+              }
+            }
+          }
+        }
+      }
+      if (working === false) {
+        break;
+      }
+    }
+    return batch;
+  }
 }
 
-function DrawAllTasks(tasks)
-{
-    let el = document.querySelector('#foo');
+function DrawAllTasks(tasks) {
+  let el = document.querySelector("#foo");
 
-    tasks.forEach(task => {
-        const tr = document.createElement('tr');
-        
-        for (let i = 0; i < 3; i++)
-        {
-            const td = document.createElement('td');
+  tasks.forEach((task) => {
+    const tr = document.createElement("tr");
 
-            td.textContent = task[i];
+    for (let i = 0; i < 3; i++) {
+      const td = document.createElement("td");
 
-            tr.appendChild(td);
-        }
+      td.textContent = task[i];
 
-        el.appendChild(tr);
-    });
+      tr.appendChild(td);
+    }
+
+    tr.style.backgroundColor = "yellow";
+
+    el.appendChild(tr);
+  });
+}
+
+function ClearTasks(cpu) {
+  let el = document.querySelector("#foo");
+
+  while (el.lastElementChild) {
+    el.removeChild(el.lastElementChild);
+  }
+
+  console.log('This is the current queue:', cpu.queue);
+
+  cpu.queue = null;
+
+  console.log('The queue is now empty:', cpu.queue);
 }
