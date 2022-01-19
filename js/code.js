@@ -10,17 +10,18 @@ class Process {
 }
 
 class FIFO {
-    constructor() {
-        this.queueLength = 0;
-        this.queue = null;
-    }
+  constructor() {
+    this.queueLength = 0;
+    this.queue = null;
+  }
 
     add(process) {
         let newProcess = new Process(process[0], process[1], process[2]);
         if (!this.queue) {
             this.queue = [newProcess];
             this.queueLength = 1;
-        } else {
+        }
+        else {
             this.queue.push(newProcess);
             this.queueLength++;
         }
@@ -29,8 +30,8 @@ class FIFO {
     remove() {
         if (this.queueLength == 1) {
             this.queue = null;
-            this.queueLength = 0
-        }
+            this.queueLength = 0;
+        }  
         else {
             this.queue.shift();
             this.queueLength--;
@@ -146,7 +147,7 @@ ClearButton.addEventListener("click", function () {
 const clearTasksButton = document.getElementById("clearTasks");
 
 clearTasksButton.addEventListener("click", function () {
-    ClearTasks(CPU1);
+  ClearTasks(CPU1);
 });
 
 LoadButton.addEventListener("click", function () {
@@ -175,7 +176,6 @@ StartStopButton.addEventListener("click", function () {
     }
 });
 
-
 function dispatcher() {
     let currentBatch = textParser();
     console.log(currentBatch);
@@ -185,22 +185,21 @@ function dispatcher() {
         CPU3.add(currentBatch[process]);
     }
     Input.value = "";
-
     DrawAllTasks(currentBatch);
 }
 
 function scheduler() {
-    if (Stop === false) {
-        if (CPU1.queue) {
-            CPU1.work(processInterval);
-        }
-        // if (CPU2.queue) {
-        //     CPU2.work(processInterval);
-        // }
-        if (CPU3.queue) {
-            CPU3.work(processInterval);
-        }
+  if (Stop === false) {
+    if (CPU1.queue) {
+      CPU1.work(processInterval);
     }
+    // if (CPU2.queue) {
+    //     CPU2.work(processInterval);
+    // }
+    if (CPU3.queue) {
+      CPU3.work(processInterval);
+    }
+  }
 }
 
 function textParser() {
@@ -285,9 +284,16 @@ function ClearTasks(cpu) {
         el.removeChild(el.lastElementChild);
     }
 
-    console.log('This is the current queue:', cpu.queue);
+  console.log("This is the current queue:", cpu.queue);
 
-    cpu.queue = null;
+  // Reset the queue & it's length
+  cpu.queueLength = 0;
+  cpu.queue = null;
 
-    console.log('The queue is now empty:', cpu.queue);
+  console.log("The queue is now empty:", cpu.queue);
+}
+
+function FormatCPUTitle(string)
+{
+  return (string.slice(0, -1) + ' ' + string.slice(-1)).toUpperCase();
 }
