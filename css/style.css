@@ -57,3 +57,7 @@ tr th:nth-child(3) {
 .hidden {
     display: none;
 }
+
+#startStopBtn {
+    background-color: red;
+}

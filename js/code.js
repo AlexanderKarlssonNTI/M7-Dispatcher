@@ -41,9 +41,14 @@ class FIFO {
     work(ms) {
         this.queue[0].execTime -= ms;
         if (this.queue[0].execTime <= 0) {
-            let temp = this.queue[0].execTime;
-            this.remove();
-            this.queue[0].execTime -= temp;
+            if (this.queueLength > 1) {
+                let temp = this.queue[0].execTime;
+                this.remove();
+                this.queue[0].execTime -= temp;
+            }
+            else {
+                this.remove()
+            }
         }
     }
 }
@@ -60,25 +65,32 @@ class SHARE {
         if (!this.queue) {
             this.queue = newProcess;
         }
-        
-        while (nextProcess.preceding) {
-            nextProcess = nextProcess.preceding;
+        else {
+            while (nextProcess.preceding) {
+                nextProcess = nextProcess.preceding;
+            }
+            nextProcess.preceding = newProcess;
         }
-        nextProcess.preceding = newProcess;
-        this.updateDisplay();
     }
     
-    remove(process) {}
+    remove(process) {
+        let nextProcess = this.queue;
+        while (nextProcess.preceding) {
+            if (nextProcess == process) {
+                break;
+            }
+            nextProcess = nextProcess.preceding;
+        }
+    }
     
     work(ms) {
-        let times = math.floor(100/this.queueLength);
+        let times = Math.floor(100/this.queueLength);
         if (this.queueLength >= 100) {
             times = 1;
         }
         if (this.queue[0].execTime <= 0) {
             this.remove();
         }
-        this.updateDisplay();
     }
 }
 
@@ -98,13 +110,20 @@ class PRIO {
 }
 
 let processInterval = 100;
-let stop = false;
+let Stop = false;
 const clock = setInterval(scheduler,processInterval);
-const Input = document.getElementById("input");
-const FileInput = document.getElementById("fileInput");
+
+// All buttons
 const ProcessButton = document.getElementById("processBtn");
 const ClearButton = document.getElementById("clearBtn");
 const LoadButton = document.getElementById("loadBtn");
+const ChangeButton = document.getElementById("changeBtn");
+const StartStopButton = document.getElementById("startStopBtn");
+
+// All inputs
+const Input = document.getElementById("input");
+const FileInput = document.getElementById("fileInput");
+const IntervalInput = document.getElementById("intervalInput");
 
 let CPU1 = new FIFO();
 let CPU2 = new SHARE();
@@ -126,13 +145,27 @@ LoadButton.addEventListener("click", function() {
         FileInput.value = null;
     }
 });
+StartStopButton.addEventListener("click", function(){
+    Stop = !Stop;
+    if (Stop == true) {
+        StartStopButton.innerHTML = "Start";
+        StartStopButton.style.backgroundColor = "rgb(239, 239, 239)";
+        console.log("stoped");
+    }
+    else if (Stop == false) {
+        StartStopButton.innerHTML = "Stop";
+        StartStopButton.style.backgroundColor = "red";
+        console.log("started");
+    }
+});
+
 
 function dispatcher() {
     let currentBatch = textParser();
     console.log(currentBatch);
     for (process in currentBatch) {
         CPU1.add(currentBatch[process]);
-        // CPU2.add(currentBatch[process]);
+        CPU2.add(currentBatch[process]);
         CPU3.add(currentBatch[process]);
     }
     Input.value = "";
@@ -141,7 +174,7 @@ function dispatcher() {
 }
 
 function scheduler() {
-    if (stop === false) {
+    if (Stop === false) {
         if (CPU1.queue) {
             CPU1.work(processInterval);
         }
