@@ -140,6 +140,7 @@ const ClearButton = document.getElementById("clearBtn");
 const LoadButton = document.getElementById("loadBtn");
 const ChangeButton = document.getElementById("changeBtn");
 const StartStopButton = document.getElementById("startStopBtn");
+const clearTasksButton = document.getElementById("clearTasks");
 
 // All inputs
 const Input = document.getElementById("input");
@@ -154,8 +155,6 @@ ProcessButton.addEventListener("click", dispatcher);
 ClearButton.addEventListener("click", function () {
     Input.value = "";
 });
-
-const clearTasksButton = document.getElementById("clearTasks");
 
 clearTasksButton.addEventListener("click", function () {
   ClearTasks(CPU1);
@@ -185,6 +184,9 @@ StartStopButton.addEventListener("click", function () {
         StartStopButton.style.backgroundColor = "red";
         console.log("started");
     }
+});
+ChangeButton.addEventListener("click",function(){
+    processInterval = IntervalInput.value;
 });
 
 function dispatcher() {

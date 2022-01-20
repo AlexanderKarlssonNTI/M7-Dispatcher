@@ -10,6 +10,9 @@
     <!-- CSS -->
     <link rel="stylesheet" href="./css/style.css">
 
+    <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
     <!-- Javascript -->
     <script src="./js/code.js" defer></script>
 
@@ -28,14 +31,14 @@
                 <button id="clearBtn">Clear</button>
                 <button id="processBtn">Execute</button>
                 <div class="column" style="gap: 4px; margin-top: 14px; margin-bottom: 14px;">
-                    <input type="text" id="intervalInput" placeholder="ms">
-                    <button id="changeBtn">change</button>
+                    <input type="text" id="intervalInput" placeholder="ms" value="100">
+                    <button id="changeBtn">Change</button>
                 </div>
-                <button id="clearTasks">Clear Tasks</button>
+                <button id="clearTasks">Abort</button>
                 <button id="startStopBtn">Stop</button>
             </div>
         </div>
-        <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2'] }">
+        <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2', 'cpu3'] }">
             <template x-for="cpu in cpus">
                 <div class="column">
                     <h2 x-text="FormatCPUTitle(cpu)"></h2>
