@@ -49,7 +49,9 @@ class FIFO {
             if (this.queueLength > 1) {
                 let temp = this.queue[0].execTime;
                 this.remove();
-                this.queue[0].execTime -= temp;
+                if (this.queue) {
+                    this.queue[0].execTime -= temp;
+                }
             }
             else {
                 this.remove();
@@ -107,10 +109,13 @@ class SHARE {
             times = 1;
         }
         while (currentProcess && iteration < 100) {
-            currentProcess.execTime -= (times + overflow);
-            if (currentProcess.execTime <= 0) {
+            currentProcess.execTime -= times;
+            while (currentProcess && currentProcess.execTime <= 0) {
                 overflow = -currentProcess.execTime;
+                let temp = currentProcess.preceding;
                 this.remove(currentProcess);
+                currentProcess = temp;
+                currentProcess.execTime -= overflow;
             }
             if (iteration > 100) {
                 break;

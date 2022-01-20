@@ -1,11 +1,18 @@
+:root {
+    --Border: #1FC742;
+}
+
 * {
     font-family: 'VT323', monospace;
+    background-color: black;
+    color: var(--Border);
+    border-color: var(--Border);
 }
 
 button, input, textarea {
     appearance: none;
     border-radius: 3px;
-    border: 2px solid black;
+    border: 2px solid var(--Border);
     outline: none;
     font-size: medium;
 }
@@ -30,11 +37,11 @@ textarea {
 }
 
 .cpuTable {
-    border: 2px solid black;
+    border: 2px solid var(--Border);
 }
 
 .cpuTable td{
-    border: 2px solid black;
+    border: 2px solid var(--Border);
     font-size: medium;
 }
 
