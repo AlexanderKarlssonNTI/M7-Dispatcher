@@ -25,17 +25,17 @@
         <div class="column">
             <h2>Batch</h2>
             <textarea name="" id="input" cols="20" rows="10"></textarea>
-            <input type="file" id="fileInput" style="display: none;">
+            <input type="file" id="file" style="display: none;">
             <div class="column Buttons" x-data>
-                <button id="loadBtn">Load</button>
-                <button id="clearBtn">Clear</button>
-                <button id="processBtn">Execute</button>
+                <button @click="LoadFile()">Load</button>
+                <button @click="UpdateCommandInput(false)">Clear</button>
+                <button @click="Dispatcher()">Execute</button>
                 <div class="column" style="gap: 4px; margin-top: 14px; margin-bottom: 14px;">
                     <input type="text" id="intervalInput" placeholder="ms" value="100">
-                    <button id="changeBtn">Change</button>
+                    <button @click="ChangeTime">Change</button>
                 </div>
-                <button id="clearTasks">Abort</button>
-                <button id="startStopBtn">Stop</button>
+                <button @click="AbortTasks(CPUs)">Abort</button>
+                <button @click="StartStopButton()">Stop</button>               
                 <div>
                     <input type="checkbox" id="fontCheck">
                     <label for="fontCheck">Easy read font</label>
@@ -67,4 +67,6 @@
         </div>
     </div>
 </body>
+
 </html>
+
