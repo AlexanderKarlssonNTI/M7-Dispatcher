@@ -146,20 +146,7 @@ let globalID = 0;
 let Stop = false;
 const clock = setInterval(scheduler, processInterval);
 
-// All buttons
-const ProcessButton = document.getElementById("processBtn");
-const ClearButton = document.getElementById("clearBtn");
-const LoadButton = document.getElementById("loadBtn");
-const ChangeButton = document.getElementById("changeBtn");
-const StartStopButton = document.getElementById("startStopBtn");
-const clearTasksButton = document.getElementById("clearTasks");
-
-// All inputs
-const Input = document.getElementById("input");
-const FileInput = document.getElementById("fileInput");
-const IntervalInput = document.getElementById("intervalInput");
-
-const CPUTypes = ['FIFO', 'SHARE', 'PRIO'];
+const CPUTypes = ['FIFO', 'SHARE'];
 
 let CPUs = [];
 
@@ -169,74 +156,20 @@ CPUTypes.forEach(type => {
     CPUs.push(CPU);
 });
 
-ProcessButton.addEventListener("click", dispatcher);
-
-ClearButton.addEventListener("click", function () {
-    Input.value = "";
-});
-
-clearTasksButton.addEventListener("click", function () {
-  AbortTasks(CPUs[0]);
-});
-
-LoadButton.addEventListener("click", function () {
-    FileInput.click();
-    FileInput.onchange = function () {
-        let file = FileInput.files[0];
-        let reader = new FileReader();
-        reader.readAsText(file);
-        reader.onload = function () {
-            Input.value = reader.result;
-        };
-        FileInput.value = null;
-    };
-});
-
-StartStopButton.addEventListener("click", function () {
-    Stop = !Stop;
-    if (Stop == true) {
-        StartStopButton.innerHTML = "Start";
-        StartStopButton.style.backgroundColor = "rgb(239, 239, 239)";
-        console.log("stoped");
-    }
-    else if (Stop == false) {
-        StartStopButton.innerHTML = "Stop";
-        StartStopButton.style.backgroundColor = "red";
-        console.log("started");
-    }
-});
-
-ChangeButton.addEventListener("click",function(){
-    processInterval = IntervalInput.value;
-});
-
-function dispatcher() {
-    let currentBatch = textParser();
-    
-    for (process in currentBatch) {
-        CPUs[0].add(currentBatch[process]);
-        CPUs[1].add(currentBatch[process]);
-        CPUs[2].add(currentBatch[process]);
-    }
-    Input.value = "";
-    DrawAllTasks(currentBatch);
-}
-
 function scheduler() {
   if (Stop === false) {
-    if (CPUs[0].queue) {
-        CPUs[0].work(processInterval);
-    }
-    if (CPUs[1].queue) {
-        CPUs[1].work(processInterval);
-    }
-    if (CPUs[2].queue) {
-        CPUs[2].work(processInterval);
-    }
+    CPUs.forEach(CPU => {
+        if(CPU.queue)
+        {
+            CPU.work(processInterval);
+        }
+    });        
   }
 }
 
 function textParser() {
+    const Input = document.getElementById('input');
+
     if (Input.value) {
         let batch = Input.value.split(/\r?\n/);
         // Spliting each line with text in it
@@ -291,39 +224,125 @@ function textParser() {
     }
 }
 
-function DrawAllTasks(tasks) {
-    let el = document.querySelector("#cpu1");
+function LoadFile()
+{
+    const el = document.getElementById('file');
 
-    tasks.forEach((task, index) => {
-        const tr = document.createElement("tr");
+    el.click();
 
-        tr.id = CPUs[0].queue[index].id;
+    el.onchange = function ()
+    {
+        let file = el.files[0];
 
-        for (let i = 0; i < 3; i++) {
-            const td = document.createElement("td");
+        let reader = new FileReader();
 
-            td.textContent = task[i];
+        reader.readAsText(file);
 
-            tr.appendChild(td);
+        reader.onload = function () {
+            UpdateCommandInput(reader.result);
         }
 
-        el.appendChild(tr);
-    });
+        el.value = null;
+    }
 }
 
-function AbortTasks(cpu) {
-    let el = document.querySelector("#foo");
+function StartStopButton()
+{
+    Stop = !Stop;
 
-    while (el.lastElementChild) {
-        el.removeChild(el.lastElementChild);
+    if (Stop == true)
+    {
+        StartStopButton.innerHTML = 'Start';
+
+        StartStopButton.style.backgroundColor = 'rgb(239, 239, 239)';
+
+        console.log('[DEBUG from ' + arguments.callee.name + '] Stopped');
+    }
+    else if (Stop == false)
+    {
+        StartStopButton.innerHTML = 'Stop';
+
+        StartStopButton.style.backgroundColor = 'red';
+
+        console.log('[DEBUG from ' + arguments.callee.name + '] Started');
+    }
+}
+
+function Dispatcher()
+{
+    let currentBatch = textParser();
+    
+    for (process in currentBatch)
+    {
+        CPUs.forEach(CPU => {
+            CPU.add(currentBatch[process]);
+        });
     }
 
-  // Reset the queue & it's length
-  cpu.queueLength = 0;
-  cpu.queue = null;
+    UpdateCommandInput(false);
+
+    DrawAllTasks(currentBatch);
 }
 
-function FormatCPUTitle(string)
+function DrawAllTasks(tasks)
 {
-  return (string.slice(0, -1) + ' ' + string.slice(-1)).toUpperCase();
+    CPUs.forEach((CPU, i) => {
+        console.log(CPU);
+
+        let el = document.querySelector('#cpu' + (i + 1).toString());
+
+        tasks.forEach((task, index) => {
+
+            const tr = document.createElement('tr');
+
+            tr.id = CPU.queue[index].id;
+
+            for (let i = 0; i < 3; i++)
+            {
+                const td = document.createElement('td');
+
+                td.textContent = task[i];
+
+                tr.appendChild(td);
+            }
+
+            el.appendChild(tr);
+        });
+    })
+}
+
+function AbortTasks(CPUs)
+{
+    CPUs.forEach(CPU => {
+        let el = document.querySelector('#' + CPU);
+
+        while (el.lastElementChild)
+        {
+            el.removeChild(el.lastElementChild);
+        }
+
+        // Reset the queue & it's length
+        CPU.queue = null;
+
+        CPU.queueLength = 0;
+    })
+}
+
+function ChangeTime()
+{
+    const el = document.getElementById('interval');
+
+    processInterval = el.value;
+}
+
+function UpdateCommandInput(string)
+{
+    const el = document.getElementById('input');
+
+    el.value = string ? string : '';
+}
+
+function FormatCPUTitle(title)
+{
+    return (title.slice(0, -1) + ' ' + title.slice(-1)).toUpperCase();
 }
