@@ -37,22 +37,48 @@ class FIFO {
             this.queueLength--;
         }
 
-        let cpuElement = document.getElementById('cpu1').children;
+        CPUs.forEach((CPU, index) => {
+            if(CPUTypes[index] === 'FIFO')
+            {
+                let el = document.getElementById('cpu' + (index + 1)).children;
 
-        cpuElement[0].remove();
+                el[0].remove();
+            }
+        })
     }
 
     work(ms) {
         this.queue[0].execTime -= ms;
-        if (this.queue[0].execTime <= 0) {
-            if (this.queueLength > 1) {
+
+        if(this.queue[0].execTime > 0)
+        {
+            let el = document.getElementById(this.queue[0].id).children;
+
+            el[1].textContent = this.queue[0].execTime;
+        }
+        
+
+        if (this.queue[0].execTime <= 0)
+        {
+            if (this.queueLength > 1)
+            {
                 let temp = this.queue[0].execTime;
                 this.remove();
-                if (this.queue) {
+
+                // If overflow
+                while (this.queue && temp > 0)
+                {
                     this.queue[0].execTime -= temp;
+
+                    let el = document.getElementById(this.queue[0].id).children;
+
+                    el[1].textContent = this.queue[0].execTime;
+
+                    temp = this.queue[0].execTime;
                 }
             }
-            else {
+            else
+            {
                 this.remove();
             }
         }
@@ -163,12 +189,15 @@ class PRIO {
 }
 
 let processInterval = 100;
+
 let globalID = 0;
+
 let Stop = false;
+
 const clock = setInterval(function(){scheduler();cpuStatus();}, processInterval);
 const startStop = document.getElementById("startStop");
 
-const CPUTypes = ['FIFO', 'SHARE'];
+const CPUTypes = ['FIFO', 'SHARE', 'PRIO'];
 
 let CPUs = [];
 
@@ -309,27 +338,56 @@ function Dispatcher()
 function DrawAllTasks(tasks)
 {
     CPUs.forEach((CPU, i) => {
-        console.log(CPU);
 
         let el = document.querySelector('#cpu' + (i + 1).toString());
 
-        tasks.forEach((task, index) => {
+        if(CPUTypes[i] === 'FIFO')
+        {
+            tasks.forEach((task, index) => {
 
-            const tr = document.createElement('tr');
+                const tr = document.createElement('tr');
 
-            tr.id = CPU.queue[index].id;
+                tr.id = CPU.queue[index].id;
 
-            for (let i = 0; i < 3; i++)
+                for (let i = 0; i < 3; i++)
+                {
+                    const td = document.createElement('td');
+
+                    td.textContent = task[i];
+
+                    tr.appendChild(td);
+                }
+
+                el.appendChild(tr);
+            });
+        }
+        else if(CPUTypes[i] === 'SHARE' || CPUTypes[i] === 'PRIO')
+        {
+            let props = ['name', 'execTime', 'priority'];
+
+            let currentTask = CPU.queue;
+
+            while(currentTask)
             {
-                const td = document.createElement('td');
+                currentTask = currentTask.preceding;
 
-                td.textContent = task[i];
+                // Create SHARE tr's
+                const tr = document.createElement('tr');
 
-                tr.appendChild(td);
+                tr.id = currentTask.id;
+
+                for (let i = 0; i < 3; i++)
+                {
+                    const td = document.createElement('td');
+
+                    td.textContent = currentTask[props[i]];
+
+                    tr.appendChild(td);
+                }
+
+                el.appendChild(tr);
             }
-
-            el.appendChild(tr);
-        });
+        }
     })
 }
 
