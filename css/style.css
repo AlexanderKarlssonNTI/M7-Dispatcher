@@ -1,18 +1,20 @@
 :root {
-    --Border: #1FC742;
+    --fontColor: #1FC742;
+    --Border: #025B18;
     --easyReadFont: 'Helvetica', 'Arial', sans-serif;
     --defaultFont:'VT323', monospace;
     --font-size: medium;
+    --checkboxSize: 13px;
 }
 
 * {
     font-family: var(--defaultFont);
     background-color: black;
-    color: var(--Border);
+    color: var(--fontColor);
     border-color: var(--Border);
 }
 
-button, input, textarea {
+button, input[type="text"], textarea {
     appearance: none;
     border-radius: 3px;
     border: 2px solid var(--Border);
@@ -20,8 +22,23 @@ button, input, textarea {
     font-size: var(--font-size);
 }
 
+input[type="checkbox"] {
+    appearance: none;
+    width: var(--checkboxSize);
+    height: var(--checkboxSize);
+    border: 2px solid var(--Border);
+    border-radius: 2px;
+    background-color: black;
+}
+
+#fontCheck:checked {
+    color: #1FC742;
+}
+
 textarea {
     resize: none;
+    background-color: #ebebeb;
+    color: black;
 }
 
 .column {
@@ -40,7 +57,7 @@ textarea {
 }
 
 .cpuTable {
-    border: 2px solid var(--Border);
+    border: 3px solid var(--Border);
 }
 
 .cpuTable td{

@@ -367,3 +367,5 @@ function cpuStatus() {
         }
     }
 }
+
+function changeFont() {}
