@@ -35,15 +35,19 @@
                     <button @click="ChangeTime">Change</button>
                 </div>
                 <button @click="AbortTasks(CPUs)">Abort</button>
-                <button @click="StartStopButton()">Stop</button>
+                <button @click="StartStopButton()">Stop</button>               
+                <div>
+                    <input type="checkbox" id="fontCheck">
+                    <label for="fontCheck">Easy read font</label>
+                </div>
             </div>
         </div>
         <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2', 'cpu3'] }">
             <template x-for="cpu in cpus">
                 <div class="column">
                     <div class="row" style="width: 100%;">
-                        <h2 x-text="FormatCPUTitle(cpu)" style="width: 40%;"></h2>
-                        <h2 style="text-align: right; width: 100%;">Not Running</h2>
+                        <h2 x-text="FormatCPUTitle(cpu)" style="width: 60%;"></h2>
+                        <h2 style="text-align: right; width: 100%;" :id="FormatCPUStatusID(cpu)"></h2>
                     </div>
 
                     <table class="cpuTable">
