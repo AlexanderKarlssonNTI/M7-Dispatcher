@@ -39,6 +39,7 @@ textarea {
     resize: none;
     background-color: #ebebeb;
     color: black;
+    border-width: .51vh;
 }
 
 .column {
@@ -98,6 +99,6 @@ tr th:nth-child(3) {
     display: none;
 }
 
-#startStopBtn {
+#startStop {
     background-color: red;
 }

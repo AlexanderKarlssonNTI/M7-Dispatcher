@@ -5,7 +5,6 @@ class Process {
         this.execTime = execTime;
         this.priority = priority;
         this.remainingTime = this.execTime;
-        this.preceding = null;
         this.upcoming = null;
     }
 }
@@ -88,14 +87,19 @@ class SHARE {
         globalID++;
 
         let nextProcess = this.queue;
-        if (!this.queue) {
+        console.log(nextProcess);
+        if (!nextProcess) {
             this.queue = newProcess;
+            this.queueLength++;
         }
         else {
             while (nextProcess.preceding) {
                 nextProcess = nextProcess.preceding;
             }
+            console.log(nextProcess);
             nextProcess.preceding = newProcess;
+            console.log(nextProcess.preceding);
+            this.queueLength++;
         }
     }
 
@@ -112,6 +116,7 @@ class SHARE {
                     break;
                 }
                 nextProcess = nextProcess.preceding;
+                this.queueLength--;
             }
         }
     }
@@ -161,6 +166,7 @@ let processInterval = 100;
 let globalID = 0;
 let Stop = false;
 const clock = setInterval(function(){scheduler();cpuStatus();}, processInterval);
+const startStop = document.getElementById("startStop");
 
 const CPUTypes = ['FIFO', 'SHARE'];
 
@@ -268,17 +274,17 @@ function StartStopButton()
 
     if (Stop == true)
     {
-        StartStopButton.innerHTML = 'Start';
+        startStop.innerHTML = 'Start';
 
-        StartStopButton.style.backgroundColor = 'rgb(239, 239, 239)';
+        startStop.style.backgroundColor = 'black';
 
         console.log('[DEBUG from ' + arguments.callee.name + '] Stopped');
     }
     else if (Stop == false)
     {
-        StartStopButton.innerHTML = 'Stop';
+        startStop.innerHTML = 'Stop';
 
-        StartStopButton.style.backgroundColor = 'red';
+        startStop.style.backgroundColor = 'red';
 
         console.log('[DEBUG from ' + arguments.callee.name + '] Started');
     }
@@ -391,8 +397,11 @@ function changeFont() {
     let root = document.querySelector(":root");
     let temp = document.querySelector("*")
     if (document.getElementById("fontCheck").checked) {
-
+        temp.style.fontFamily = "var(--easyReadFont)";
         root.style.setProperty("--font-size","12px");
     }
-    else {}
+    else {
+        temp.style.fontFamily = "var(--defaultFont)";
+        root.style.setProperty("--font-size","16px");
+    }
 }
