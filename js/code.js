@@ -154,17 +154,24 @@ const Input = document.getElementById("input");
 const FileInput = document.getElementById("fileInput");
 const IntervalInput = document.getElementById("intervalInput");
 
-let CPU1 = new FIFO();
-let CPU2 = new SHARE();
-let CPU3 = new PRIO();
+const CPUTypes = ['FIFO', 'SHARE', 'PRIO'];
+
+let CPUs = [];
+
+CPUTypes.forEach(type => {
+    let CPU = eval('new ' + type + '()');
+
+    CPUs.push(CPU);
+});
 
 ProcessButton.addEventListener("click", dispatcher);
+
 ClearButton.addEventListener("click", function () {
     Input.value = "";
 });
 
 clearTasksButton.addEventListener("click", function () {
-  AbortTasks(CPU1);
+  AbortTasks(CPUs[0]);
 });
 
 LoadButton.addEventListener("click", function () {
@@ -179,6 +186,7 @@ LoadButton.addEventListener("click", function () {
         FileInput.value = null;
     };
 });
+
 StartStopButton.addEventListener("click", function () {
     Stop = !Stop;
     if (Stop == true) {
@@ -192,6 +200,7 @@ StartStopButton.addEventListener("click", function () {
         console.log("started");
     }
 });
+
 ChangeButton.addEventListener("click",function(){
     processInterval = IntervalInput.value;
 });
@@ -200,9 +209,9 @@ function dispatcher() {
     let currentBatch = textParser();
     
     for (process in currentBatch) {
-        CPU1.add(currentBatch[process]);
-        CPU2.add(currentBatch[process]);
-        CPU3.add(currentBatch[process]);
+        CPUs[0].add(currentBatch[process]);
+        CPUs[1].add(currentBatch[process]);
+        CPUs[2].add(currentBatch[process]);
     }
     Input.value = "";
     DrawAllTasks(currentBatch);
@@ -210,14 +219,14 @@ function dispatcher() {
 
 function scheduler() {
   if (Stop === false) {
-    if (CPU1.queue) {
-      CPU1.work(processInterval);
+    if (CPUs[0].queue) {
+        CPUs[0].work(processInterval);
     }
-    if (CPU2.queue) {
-        CPU2.work(processInterval);
+    if (CPUs[1].queue) {
+        CPUs[1].work(processInterval);
     }
-    if (CPU3.queue) {
-      CPU3.work(processInterval);
+    if (CPUs[2].queue) {
+        CPUs[2].work(processInterval);
     }
   }
 }
@@ -283,7 +292,7 @@ function DrawAllTasks(tasks) {
     tasks.forEach((task, index) => {
         const tr = document.createElement("tr");
 
-        tr.id = CPU1.queue[index].id;
+        tr.id = CPUs[0].queue[index].id;
 
         for (let i = 0; i < 3; i++) {
             const td = document.createElement("td");
