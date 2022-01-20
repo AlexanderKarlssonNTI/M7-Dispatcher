@@ -363,6 +363,11 @@ function FormatCPUTitle(string)
   return (string.slice(0, -1) + ' ' + string.slice(-1)).toUpperCase();
 }
 
+function FormatCPUStatusID(string)
+{
+  return (string.slice(0, -1) + 'Status' + string.slice(-1));
+}
+
 function cpuStatus() {
     for (cpu in CPUs) {
         let cpuId = "cpuStatus"+(parseInt(cpu)+1);
