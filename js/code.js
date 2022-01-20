@@ -58,6 +58,22 @@ class FIFO {
             }
         }
     }
+
+    updateStatus() {
+        let cpuStatus = document.getElementById("cpuStatus");
+        if (!this.queue) {
+            cpuStatus.innerHTML = "Idle";
+        }
+        else if (this.queue && Stop === false) {
+            cpuStatus.innerHTML = "Running";
+        }
+        else if (this.queue && Stop === true) {
+            cpuStatus.innerHTML = "Paused";
+        }
+        else {
+            cpuStatus.innerHTML = "ERROR!";
+        }
+    }
 }
 
 class SHARE {
@@ -144,7 +160,7 @@ class PRIO {
 let processInterval = 100;
 let globalID = 0;
 let Stop = false;
-const clock = setInterval(scheduler, processInterval);
+const clock = setInterval(function(){scheduler();cpuStatus();}, processInterval);
 
 // All buttons
 const ProcessButton = document.getElementById("processBtn");
@@ -326,4 +342,28 @@ function AbortTasks(cpu) {
 function FormatCPUTitle(string)
 {
   return (string.slice(0, -1) + ' ' + string.slice(-1)).toUpperCase();
+}
+
+function FormatCPUStatusID(string)
+{
+  return (string.slice(0, -1) + 'Status' + string.slice(-1));
+}
+
+function cpuStatus() {
+    for (cpu in CPUs) {
+        let cpuId = "cpuStatus"+(parseInt(cpu)+1);
+        let cpuStatus = document.getElementById(cpuId);
+        if (!CPUs[cpu].queue) {
+            cpuStatus.innerHTML = "Idle";
+        }
+        else if (CPUs[cpu].queue && Stop === false) {
+            cpuStatus.innerHTML = "Running";
+        }
+        else if (CPUs[cpu].queue && Stop === true) {
+            cpuStatus.innerHTML = "Paused";
+        }
+        else {
+            cpuStatus.innerHTML = "ERROR!";
+        }
+    }
 }

@@ -1,9 +1,12 @@
 :root {
     --Border: #1FC742;
+    --easyReadFont: 'Helvetica', 'Arial', sans-serif;
+    --defaultFont:'VT323', monospace;
+    --font-size: medium;
 }
 
 * {
-    font-family: 'VT323', monospace;
+    font-family: var(--defaultFont);
     background-color: black;
     color: var(--Border);
     border-color: var(--Border);
@@ -14,7 +17,7 @@ button, input, textarea {
     border-radius: 3px;
     border: 2px solid var(--Border);
     outline: none;
-    font-size: medium;
+    font-size: var(--font-size);
 }
 
 textarea {
