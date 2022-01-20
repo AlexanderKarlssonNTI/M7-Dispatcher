@@ -445,4 +445,12 @@ function cpuStatus() {
     }
 }
 
-function changeFont() {}
+function changeFont() {
+    let root = document.querySelector(":root");
+    let temp = document.querySelector("*")
+    if (document.getElementById("fontCheck").checked) {
+
+        root.style.setProperty("--font-size","12px");
+    }
+    else {}
+}
