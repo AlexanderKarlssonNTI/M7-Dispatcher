@@ -213,9 +213,9 @@ function scheduler() {
     if (CPU1.queue) {
       CPU1.work(processInterval);
     }
-    // if (CPU2.queue) {
-    //     CPU2.work(processInterval);
-    // }
+    if (CPU2.queue) {
+        CPU2.work(processInterval);
+    }
     if (CPU3.queue) {
       CPU3.work(processInterval);
     }

@@ -41,7 +41,10 @@
         <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2', 'cpu3'] }">
             <template x-for="cpu in cpus">
                 <div class="column">
-                    <h2 x-text="FormatCPUTitle(cpu)"></h2>
+                    <div class="row" style="width: 100%;">
+                        <h2 x-text="FormatCPUTitle(cpu)" style="width: 100%;"></h2>
+                        <h2 style="text-align: right; width: 100%;">Run</h2>
+                    </div>
 
                     <table class="cpuTable">
                         <thead>

@@ -2,6 +2,14 @@
     font-family: 'VT323', monospace;
 }
 
+button, input, textarea {
+    appearance: none;
+    border-radius: 3px;
+    border: 2px solid black;
+    outline: none;
+    font-size: medium;
+}
+
 textarea {
     resize: none;
 }
@@ -27,6 +35,7 @@ textarea {
 
 .cpuTable td{
     border: 2px solid black;
+    font-size: medium;
 }
 
 .cpuTable tr{
