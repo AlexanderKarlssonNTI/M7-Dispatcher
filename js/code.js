@@ -1,6 +1,6 @@
 class Process {
     constructor(id ,name, execTime, priority) {
-        this.ID = id;
+        this.id = id;
         this.name = name;
         this.execTime = execTime;
         this.priority = priority;
@@ -37,6 +37,10 @@ class FIFO {
             this.queue.shift();
             this.queueLength--;
         }
+
+        let cpuElement = document.getElementById('cpu1').children;
+
+        cpuElement[0].remove();
     }
 
     work(ms) {
@@ -61,7 +65,10 @@ class SHARE {
     }
 
     add(process) {
-        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
+        let newProcess = new Process(globalID,process[0], process[1], process[2]);
+
+        globalID++;
+
         let nextProcess = this.queue;
         if (!this.queue) {
             this.queue = newProcess;
@@ -157,7 +164,7 @@ ClearButton.addEventListener("click", function () {
 });
 
 clearTasksButton.addEventListener("click", function () {
-  ClearTasks(CPU1);
+  AbortTasks(CPU1);
 });
 
 LoadButton.addEventListener("click", function () {
@@ -191,7 +198,7 @@ ChangeButton.addEventListener("click",function(){
 
 function dispatcher() {
     let currentBatch = textParser();
-    console.log(currentBatch);
+    
     for (process in currentBatch) {
         CPU1.add(currentBatch[process]);
         CPU2.add(currentBatch[process]);
@@ -273,8 +280,10 @@ function textParser() {
 function DrawAllTasks(tasks) {
     let el = document.querySelector("#cpu1");
 
-    tasks.forEach((task) => {
+    tasks.forEach((task, index) => {
         const tr = document.createElement("tr");
+
+        tr.id = CPU1.queue[index].id;
 
         for (let i = 0; i < 3; i++) {
             const td = document.createElement("td");
@@ -284,26 +293,20 @@ function DrawAllTasks(tasks) {
             tr.appendChild(td);
         }
 
-        tr.style.backgroundColor = "yellow";
-
         el.appendChild(tr);
     });
 }
 
-function ClearTasks(cpu) {
+function AbortTasks(cpu) {
     let el = document.querySelector("#foo");
 
     while (el.lastElementChild) {
         el.removeChild(el.lastElementChild);
     }
 
-  console.log("This is the current queue:", cpu.queue);
-
   // Reset the queue & it's length
   cpu.queueLength = 0;
   cpu.queue = null;
-
-  console.log("The queue is now empty:", cpu.queue);
 }
 
 function FormatCPUTitle(string)
