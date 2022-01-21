@@ -133,15 +133,16 @@ class SHARE {
     }
 
     work(ms) {
-        let times = Math.floor(100 / this.queueLength);
+        let times = Math.floor(ms / this.queueLength);
         let currentProcess = this.queue;
         let overflow = 0;
         let iteration = 1;
-        if (this.queueLength >= 100) {
+        if (this.queueLength >= processInterval) {
             times = 1;
         }
-        while (currentProcess && iteration < 100) {
+        while (currentProcess && iteration < processInterval) {
             currentProcess.execTime -= times;
+            console.log('DEBUG', currentProcess.id);
             let el = document.getElementById(currentProcess.id).children;
 
             el[1].textContent = currentProcess.execTime;
@@ -155,7 +156,7 @@ class SHARE {
 
                 el[1].textContent = currentProcess.execTime;
             }
-            if (iteration > 100) {
+            if (iteration > processInterval) {
                 break;
             }
             currentProcess = currentProcess.preceding;
