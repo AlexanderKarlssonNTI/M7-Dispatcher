@@ -443,8 +443,9 @@ function cpuStatus() {
 }
 
 function changeFont() {
+    console.log("start")
     let root = document.querySelector(":root");
-    if (document.getElementById("fontCheck").checked) {
+    if (document.getElementById("fontCheck").checked === true) {
         root.style.setProperty("--currentFont","var(--easyReadFont)");
         root.style.setProperty("--font-size","12px");
     }
