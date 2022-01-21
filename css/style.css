@@ -3,12 +3,13 @@
     --Border: #025B18;
     --easyReadFont: 'Helvetica', 'Arial', sans-serif;
     --defaultFont:'VT323', monospace;
+    --currentFont: var(--defaultFont);
     --font-size: medium;
     --checkboxSize: 13px;
 }
 
 * {
-    font-family: var(--defaultFont);
+    font-family: var(--currentFont);
     background-color: black;
     color: var(--fontColor);
     border-color: var(--Border);
@@ -32,7 +33,7 @@ input[type="checkbox"] {
 }
 
 #fontCheck:checked {
-    color: #1FC742;
+    background-color: #1FC742;
 }
 
 textarea {

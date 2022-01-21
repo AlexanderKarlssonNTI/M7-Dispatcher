@@ -48,55 +48,43 @@ class FIFO {
     }
 
     work(ms) {
-        this.queue[0].execTime -= ms;
+        if ((this.queue[0].execTime - ms) > 0) {
+            this.queue[0].execTime -= ms;
 
-        if(this.queue[0].execTime > 0)
-        {
             let el = document.getElementById(this.queue[0].id).children;
 
             el[1].textContent = this.queue[0].execTime;
         }
-        
-
-        if (this.queue[0].execTime <= 0)
+        else if ((this.queue[0].execTime - ms) <= 0)
         {
             if (this.queueLength > 1)
             {
-                let temp = this.queue[0].execTime;
+                let temp = ms - this.queue[0].execTime;
                 this.remove();
 
                 // If overflow
-                while (this.queue && temp > 0)
+                while (this.queue)
                 {
-                    this.queue[0].execTime -= temp;
+                    if ((this.queue[0].execTime - temp) <= 0) {
+                        temp -= this.queue[0].execTime;
+                        this.remove();
+                        let el = document.getElementById(this.queue[0].id).children;
 
-                    let el = document.getElementById(this.queue[0].id).children;
+                        el[1].textContent = this.queue[0].execTime;
+                    }
+                    else {
+                        this.queue[0].execTime -= temp;
+                        let el = document.getElementById(this.queue[0].id).children;
 
-                    el[1].textContent = this.queue[0].execTime;
-
-                    temp = this.queue[0].execTime;
+                        el[1].textContent = this.queue[0].execTime;
+                        break;
+                    }
                 }
             }
             else
             {
                 this.remove();
             }
-        }
-    }
-
-    updateStatus() {
-        let cpuStatus = document.getElementById("cpuStatus");
-        if (!this.queue) {
-            cpuStatus.innerHTML = "Idle";
-        }
-        else if (this.queue && Stop === false) {
-            cpuStatus.innerHTML = "Running";
-        }
-        else if (this.queue && Stop === true) {
-            cpuStatus.innerHTML = "Paused";
-        }
-        else {
-            cpuStatus.innerHTML = "ERROR!";
         }
     }
 }
@@ -113,7 +101,6 @@ class SHARE {
         globalID++;
 
         let nextProcess = this.queue;
-        console.log(nextProcess);
         if (!nextProcess) {
             this.queue = newProcess;
             this.queueLength++;
@@ -122,9 +109,7 @@ class SHARE {
             while (nextProcess.preceding) {
                 nextProcess = nextProcess.preceding;
             }
-            console.log(nextProcess);
             nextProcess.preceding = newProcess;
-            console.log(nextProcess.preceding);
             this.queueLength++;
         }
     }
@@ -157,12 +142,18 @@ class SHARE {
         }
         while (currentProcess && iteration < 100) {
             currentProcess.execTime -= times;
+            let el = document.getElementById(currentProcess.id).children;
+
+            el[1].textContent = currentProcess.execTime;
             while (currentProcess && currentProcess.execTime <= 0) {
                 overflow = -currentProcess.execTime;
                 let temp = currentProcess.preceding;
                 this.remove(currentProcess);
                 currentProcess = temp;
                 currentProcess.execTime -= overflow;
+                let el = document.getElementById(currentProcess.id).children;
+
+                el[1].textContent = currentProcess.execTime;
             }
             if (iteration > 100) {
                 break;
@@ -194,7 +185,7 @@ let globalID = 0;
 
 let Stop = false;
 
-const clock = setInterval(function(){scheduler();cpuStatus();}, processInterval);
+const clock = setInterval(function(){scheduler();cpuStatus();}, 500);
 const startStop = document.getElementById("startStop");
 
 const CPUTypes = ['FIFO', 'SHARE', 'PRIO'];
@@ -410,9 +401,9 @@ function AbortTasks(CPUs)
 
 function ChangeTime()
 {
-    const el = document.getElementById('interval');
-
+    const el = document.getElementById('intervalInput');
     processInterval = el.value;
+
 }
 
 function UpdateCommandInput(string)
@@ -453,13 +444,12 @@ function cpuStatus() {
 
 function changeFont() {
     let root = document.querySelector(":root");
-    let temp = document.querySelector("*")
     if (document.getElementById("fontCheck").checked) {
-        temp.style.fontFamily = "var(--easyReadFont)";
+        root.style.setProperty("--currentFont","var(--easyReadFont)");
         root.style.setProperty("--font-size","12px");
     }
     else {
-        temp.style.fontFamily = "var(--defaultFont)";
+        root.style.setProperty("--currentFont","var(--defaultFont)");
         root.style.setProperty("--font-size","16px");
     }
 }
