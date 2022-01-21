@@ -27,22 +27,26 @@
             <textarea name="" id="input" cols="20" rows="10"></textarea>
             <input type="file" id="file" style="display: none;" accept=".txt">
             <div class="column Buttons" x-data>
+
                 <button @click="LoadFile()">Load</button>
                 <button @click="UpdateCommandInput(false)">Clear</button>
                 <button @click="Dispatcher()">Execute</button>
+
                 <div class="column" style="gap: 4px; margin-top: 14px; margin-bottom: 14px;">
                     <input type="text" id="intervalInput" placeholder="ms" value="100">
                     <button @click="ChangeTime()">Change</button>
                 </div>
+
                 <button @click="AbortTasks(CPUs)">Abort</button>
-                <button @click="StartStopButton()" id="startStop">Stop</button>               
+                <button @click="StartStopButton()" id="startStop">Stop</button>
+
                 <div>
-                    <input type="checkbox" id="fontCheck" onclick="changeFont()">
+                    <input type="checkbox" id="fontCheck" @click="ChangeFont()">
                     <label for="fontCheck">Easy read font</label>
                 </div>
             </div>
         </div>
-        <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2', 'cpu3'] }">
+        <div class="row cpuDisplay" x-data="{ cpus: ['cpu1', 'cpu2'] }">
             <template x-for="cpu in cpus">
                 <div class="column">
                     <div class="row" style="width: 100%;">
@@ -58,9 +62,7 @@
                                 <th>Prio</th>
                             </tr> 
                         </thead>
-                        <tbody :id="cpu">
-                            
-                        </tbody>
+                        <tbody :id="cpu"></tbody>
                     </table>
                 </div>
             </template>

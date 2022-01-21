@@ -1,5 +1,11 @@
-class Process {
-    constructor(id ,name, execTime, priority) {
+/*
+ *  Classes
+*/
+
+class Process
+{
+    constructor(id ,name, execTime, priority)
+    {
         this.id = id;
         this.name = name;
         this.execTime = execTime;
@@ -9,14 +15,17 @@ class Process {
     }
 }
 
-class FIFO {
-  constructor() {
+class FIFO
+{
+  constructor()
+  {
     this.queueLength = 0;
     this.queue = null;
   }
 
-    add(process) {
-        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
+    add(process)
+    {
+        let newProcess = new Process(GlobalTaskID++, process[0], process[1], process[2]);
         
         if (!this.queue) {
             this.queue = [newProcess];
@@ -28,7 +37,8 @@ class FIFO {
         }
     }
 
-    remove() {
+    remove()
+    {
         if (this.queueLength == 1) {
             this.queue = null;
             this.queueLength = 0;
@@ -48,7 +58,8 @@ class FIFO {
         })
     }
 
-    work(ms) {
+    work(ms)
+    {
         if ((this.queue[0].execTime - ms) > 0) {
             this.queue[0].execTime -= ms;
 
@@ -90,14 +101,17 @@ class FIFO {
     }
 }
 
-class SHARE {
-    constructor() {
+class SHARE
+{
+    constructor()
+    {
         this.queueLength = 0;
         this.queue = null;
     }
 
-    add(process) {
-        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
+    add(process)
+    {
+        let newProcess = new Process(GlobalTaskID++,process[0], process[1], process[2]);
 
         let nextProcess = this.queue;
         if (!nextProcess) {
@@ -113,7 +127,8 @@ class SHARE {
         }
     }
 
-    remove(process) {
+    remove(process)
+    {
         let nextProcess = this.queue;
         if (nextProcess == process) {
             this.queue = nextProcess.preceding;
@@ -147,71 +162,91 @@ class SHARE {
         }
     }
 
-    work(ms) {
+    work(ms)
+    {
         let times = Math.floor(ms / this.queueLength);
         let currentProcess = this.queue;
-        let overflow = 0;
+        // let overflow = 0;
         let iteration = 1;
-        if (this.queueLength >= processInterval) {
+        if (this.queueLength >= ProcessInterval) {
             times = 1;
         }
-        while (currentProcess && iteration < processInterval) {
-            currentProcess.execTime -= times;
-        
-            if(currentProcess.id)
-            {
-                let el = document.getElementById(currentProcess.id).children;
 
-            el[1].textContent = currentProcess.execTime;
-            }
-            
-            while (currentProcess && currentProcess.execTime <= 0) {
-                overflow = -currentProcess.execTime;
+        while (currentProcess && iteration < ProcessInterval)
+        {  
+            if ((currentProcess.execTime - times) <= 0) {
+                // overflow = -currentProcess.execTime;
                 let temp = currentProcess.preceding;
                 this.remove(currentProcess);
                 currentProcess = temp;
-                currentProcess.execTime -= overflow;
+                // currentProcess.execTime -= overflow;
                 
-                if(currentProcess.id)
-                {
-                    let el = document.getElementById(currentProcess.id).children;
-    
-                    el[1].textContent = currentProcess.execTime;
-                }
-                
+                // if(currentProcess.id)
+                // {
+                    //     let el = document.getElementById(currentProcess.id).children;
+                    
+                    //     el[1].textContent = currentProcess.execTime;
+                    // }
+                    
             }
-            if (iteration > processInterval) {
+            else
+            {
+                currentProcess.execTime -= times;
+            }
+
+            if (iteration > ProcessInterval)
+            {
                 break;
             }
+            let el = document.getElementById(currentProcess.id).children;
+                
+            el[1].textContent = currentProcess.execTime;
+
             currentProcess = currentProcess.preceding;
+
             iteration++;
         }
     }
 }
 
-class PRIO {
-    constructor() {
+class PRIO
+{
+    constructor()
+    {
         this.queueLength = 0;
         this.queue = null;
     }
 
-    add(process) {
-        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
+    add(process)
+    {
+        let newProcess = new Process(GlobalTaskID++,process[0], process[1], process[2]);
     }
 
-    remove(process) { }
+    remove(process)
+    {
 
-    work(ms) { }
+    }
+
+    work(ms)
+    {
+        
+    }
 }
 
-let processInterval = 100;
+/*
+ *  Core
+*/
 
-let globalID = 0;
+let ProcessInterval = 100;
+
+let GlobalTaskID = 0;
 
 let Stop = false;
 
-const clock = setInterval(function(){scheduler();cpuStatus();}, 500);
-const startStop = document.getElementById("startStop");
+const Clock = setInterval(function() {
+    Scheduler();
+    UpdateCPUStatus();
+}, 500);
 
 const CPUTypes = ['FIFO', 'SHARE'];
 
@@ -223,70 +258,105 @@ CPUTypes.forEach(type => {
     CPUs.push(CPU);
 });
 
-function scheduler() {
-  if (Stop === false) {
+/*
+ *  Functions
+*/
+
+function Scheduler()
+{
+  if (!Stop)
+  {
     CPUs.forEach(CPU => {
         if(CPU.queue)
         {
-            CPU.work(processInterval);
+            CPU.work(ProcessInterval);
         }
-    });        
+    });
   }
 }
 
-function textParser() {
-    const Input = document.getElementById('input');
+function Parser()
+{
+    const el = document.getElementById('input');
 
-    if (Input.value) {
-        let batch = Input.value.split(/\r?\n/);
+    if (el.value)
+    {
+        let batch = el.value.split(/\r?\n/);
         // Spliting each line with text in it
-        for (process in batch) {
-            if (batch[process] != "") {
-                batch[process] = batch[process].split(" ");
+
+        for (process in batch)
+        {
+            if (batch[process] != '')
+            {
+                batch[process] = batch[process].split(' ');
             }
         }
-        while (batch.includes("")) {
-            for (process in batch) {
-                if (batch[process] === "") {
+
+        while (batch.includes(''))
+        {
+            for (process in batch)
+            {
+                if (batch[process] === '')
+                {
                     batch.splice(process, 1);
                 }
             }
         }
-        while (1 + 1 == 2) {
+
+        while (1 + 1 == 2)
+        {
             let working = false;
-            for (process in batch) {
-                while (batch[process].includes("")) {
-                    batch[process].splice(batch[process].indexOf(""), 1);
+
+            for (process in batch)
+            {
+                while (batch[process].includes(''))
+                {
+                    batch[process].splice(batch[process].indexOf(''), 1);
                 }
-                if (batch[process].length == 1 || batch[process].length > 3) {
+
+                if (batch[process].length == 1 || batch[process].length > 3)
+                {
                     batch.splice(process, 1);
                     working = true;
                 } 
-                else {
-                    if (batch[process].length == 2) {
+                else
+                {
+                    if (batch[process].length == 2)
+                    {
                         batch[process].push(1);
                     }
-                    if (batch[process].length == 3) {
-                        if (Number.isNaN(batch[process][1]) || Number.isNaN(batch[process][2])) {
+
+                    if (batch[process].length == 3)
+                    {
+                        if (Number.isNaN(batch[process][1]) || Number.isNaN(batch[process][2]))
+                        {
                             batch.splice(process, 1);
                             working = true;
                         } 
-                        else {
+                        else
+                        {
                             batch[process][1] = parseInt(batch[process][1]);
+
                             batch[process][2] = parseInt(batch[process][2]);
-                            if (batch[process][2] > 5) {
+
+                            if (batch[process][2] > 5)
+                            {
                                 batch[process][2] = 5;
-                            } else if (batch[process][2] < 1) {
+                            }
+                            else if (batch[process][2] < 1)
+                            {
                                 batch[process][2] = 1;
                             }
                         }
                     }
                 }
             }
-            if (working === false) {
+            if (!working)
+            {
                 break;
             }
         }
+
         return batch;
     }
 }
@@ -317,38 +387,40 @@ function StartStopButton()
 {
     Stop = !Stop;
 
-    if (Stop == true)
+    const el = document.getElementById('startStop');
+
+    if (Stop)
     {
-        startStop.innerHTML = 'Start';
+        el.innerHTML = 'Start';
 
-        startStop.style.backgroundColor = 'black';
+        el.style.backgroundColor = 'black';
 
-        console.log('[DEBUG from ' + arguments.callee.name + '] Stopped');
+        console.log(arguments.callee.name, 'Stopped');
     }
-    else if (Stop == false)
+    else
     {
-        startStop.innerHTML = 'Stop';
-
-        startStop.style.backgroundColor = 'red';
-
-        console.log('[DEBUG from ' + arguments.callee.name + '] Started');
+        el.innerHTML = 'Stop';
+        
+        el.style.backgroundColor = 'red';
+        
+        console.log(arguments.callee.name, 'Started');
     }
 }
 
 function Dispatcher()
 {
-    let currentBatch = textParser();
+    let batch = Parser();
     
-    for (process in currentBatch)
+    for (process in batch)
     {
         CPUs.forEach(CPU => {
-            CPU.add(currentBatch[process]);
+            CPU.add(batch[process]);
         });
     }
 
     UpdateCommandInput(false);
 
-    DrawAllTasks(currentBatch);
+    DrawAllTasks(batch);
 }
 
 function DrawAllTasks(tasks)
@@ -404,7 +476,7 @@ function DrawAllTasks(tasks)
                 currentTask = currentTask.preceding;
             }
         }
-    })
+    });
 }
 
 function AbortTasks(CPUs)
@@ -421,14 +493,14 @@ function AbortTasks(CPUs)
         CPU.queue = null;
 
         CPU.queueLength = 0;
-    })
+    });
 }
 
 function ChangeTime()
 {
     const el = document.getElementById('intervalInput');
-    processInterval = el.value;
-
+    
+    ProcessInterval = el.value;
 }
 
 function UpdateCommandInput(string)
@@ -448,33 +520,45 @@ function FormatCPUStatusID(string)
   return (string.slice(0, -1) + 'Status' + string.slice(-1));
 }
 
-function cpuStatus() {
-    for (cpu in CPUs) {
-        let cpuId = "cpuStatus"+(parseInt(cpu)+1);
-        let cpuStatus = document.getElementById(cpuId);
-        if (!CPUs[cpu].queue) {
-            cpuStatus.innerHTML = "Idle";
+function UpdateCPUStatus()
+{
+    for (CPU in CPUs)
+    {
+        let id = 'cpuStatus' + (parseInt(CPU) + 1);
+
+        let status = document.getElementById(id);
+
+        if (!CPUs[CPU].queue)
+        {
+            status.innerHTML = 'Idle';
         }
-        else if (CPUs[cpu].queue && Stop === false) {
-            cpuStatus.innerHTML = "Running";
+        else if (CPUs[CPU].queue && !Stop)
+        {
+            status.innerHTML = 'Running';
         }
-        else if (CPUs[cpu].queue && Stop === true) {
-            cpuStatus.innerHTML = "Paused";
+        else if (CPUs[CPU].queue && Stop)
+        {
+            status.innerHTML = 'Paused';
         }
-        else {
-            cpuStatus.innerHTML = "ERROR!";
+        else
+        {
+            status.innerHTML = 'Error';
         }
     }
 }
 
-function changeFont() {
-    let root = document.querySelector(":root");
-    if (document.getElementById("fontCheck").checked === true) {
-        root.style.setProperty("--currentFont","var(--easyReadFont)");
-        root.style.setProperty("--font-size","12px");
+function ChangeFont()
+{
+    let root = document.querySelector(':root');
+
+    if (document.getElementById('fontCheck').checked)
+    {
+        root.style.setProperty('--currentFont', 'var(--easyReadFont)');
+        root.style.setProperty('--font-size', '12px');
     }
-    else {
-        root.style.setProperty("--currentFont","var(--defaultFont)");
-        root.style.setProperty("--font-size","16px");
+    else
+    {
+        root.style.setProperty('--currentFont', 'var(--defaultFont)');
+        root.style.setProperty('--font-size', '16px');
     }
 }
