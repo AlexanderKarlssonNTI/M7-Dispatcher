@@ -17,6 +17,7 @@ class FIFO {
 
     add(process) {
         let newProcess = new Process(globalID++,process[0], process[1], process[2]);
+        
         if (!this.queue) {
             this.queue = [newProcess];
             this.queueLength = 1;
@@ -96,9 +97,7 @@ class SHARE {
     }
 
     add(process) {
-        let newProcess = new Process(globalID,process[0], process[1], process[2]);
-
-        globalID++;
+        let newProcess = new Process(globalID++,process[0], process[1], process[2]);
 
         let nextProcess = this.queue;
         if (!nextProcess) {
@@ -124,8 +123,24 @@ class SHARE {
                 if (nextProcess.preceding == process) {
                     let temp = nextProcess.preceding;
                     nextProcess.preceding = temp;
+
+                    CPUs.forEach((CPU, index) => {
+                        if(CPUTypes[index] === 'SHARE')
+                        {
+                            if(process.id)
+                            {
+                                let el = document.getElementById(process.id);
+            
+                                el.remove();
+
+                                process.id = false;
+                            }
+                        }
+                    });
+
                     break;
                 }
+
                 nextProcess = nextProcess.preceding;
                 this.queueLength--;
             }
@@ -142,19 +157,28 @@ class SHARE {
         }
         while (currentProcess && iteration < processInterval) {
             currentProcess.execTime -= times;
-            console.log('DEBUG', currentProcess.id);
-            let el = document.getElementById(currentProcess.id).children;
+        
+            if(currentProcess.id)
+            {
+                let el = document.getElementById(currentProcess.id).children;
 
             el[1].textContent = currentProcess.execTime;
+            }
+            
             while (currentProcess && currentProcess.execTime <= 0) {
                 overflow = -currentProcess.execTime;
                 let temp = currentProcess.preceding;
                 this.remove(currentProcess);
                 currentProcess = temp;
                 currentProcess.execTime -= overflow;
-                let el = document.getElementById(currentProcess.id).children;
-
-                el[1].textContent = currentProcess.execTime;
+                
+                if(currentProcess.id)
+                {
+                    let el = document.getElementById(currentProcess.id).children;
+    
+                    el[1].textContent = currentProcess.execTime;
+                }
+                
             }
             if (iteration > processInterval) {
                 break;
@@ -189,7 +213,7 @@ let Stop = false;
 const clock = setInterval(function(){scheduler();cpuStatus();}, 500);
 const startStop = document.getElementById("startStop");
 
-const CPUTypes = ['FIFO', 'SHARE', 'PRIO'];
+const CPUTypes = ['FIFO', 'SHARE'];
 
 let CPUs = [];
 
@@ -361,23 +385,23 @@ function DrawAllTasks(tasks)
 
             while(currentTask)
             {
-                currentTask = currentTask.preceding;
-
                 // Create SHARE tr's
                 const tr = document.createElement('tr');
-
+                                
                 tr.id = currentTask.id;
-
+                
                 for (let i = 0; i < 3; i++)
                 {
                     const td = document.createElement('td');
-
+                    
                     td.textContent = currentTask[props[i]];
-
+                    
                     tr.appendChild(td);
                 }
-
+                
                 el.appendChild(tr);
+
+                currentTask = currentTask.preceding;
             }
         }
     })
@@ -444,7 +468,6 @@ function cpuStatus() {
 }
 
 function changeFont() {
-    console.log("start")
     let root = document.querySelector(":root");
     if (document.getElementById("fontCheck").checked === true) {
         root.style.setProperty("--currentFont","var(--easyReadFont)");
