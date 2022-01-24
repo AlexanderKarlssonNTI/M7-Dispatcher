@@ -147,8 +147,6 @@ class SHARE
                                 let el = document.getElementById(process.id);
             
                                 el.remove();
-
-                                process.id = false;
                             }
                         }
                     });
@@ -181,26 +179,25 @@ class SHARE
                 currentProcess = temp;
                 // currentProcess.execTime -= overflow;
                 
-                // if(currentProcess.id)
-                // {
-                    //     let el = document.getElementById(currentProcess.id).children;
-                    
-                    //     el[1].textContent = currentProcess.execTime;
-                    // }
+                console.log("current Process Id: ",currentProcess.id)
+                let el = document.getElementById(currentProcess.id).children;
+                
+                el[1].textContent = currentProcess.execTime;
                     
             }
             else
             {
                 currentProcess.execTime -= times;
+                console.log("current Process Id: ",currentProcess.id)
+                let el = document.getElementById(currentProcess.id).children;
+                
+                el[1].textContent = currentProcess.execTime;
             }
 
             if (iteration > ProcessInterval)
             {
                 break;
             }
-            let el = document.getElementById(currentProcess.id).children;
-                
-            el[1].textContent = currentProcess.execTime;
 
             currentProcess = currentProcess.preceding;
 
